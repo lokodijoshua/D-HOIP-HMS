@@ -1,0 +1,54 @@
+name: D-HOIP CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - '**'
+
+permissions:
+  contents: read
+
+jobs:
+  whitespace:
+    name: Whitespace and patch check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check diff for whitespace errors
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            base_sha="$PR_BASE_SHA"
+          else
+            base_sha="$PUSH_BEFORE_SHA"
+          fi
+
+          if [ -z "$base_sha" ]; then
+            echo "::error::No base commit is available for this event."
+            exit 1
+          fi
+
+          if [ "$base_sha" = "0000000000000000000000000000000000000000" ]; then
+            echo "No previous commit exists; checking the full tree against the empty tree."
+            base_sha="$(git hash-object -t tree /dev/null)"
+          elif ! git cat-file -e "${base_sha}^{commit}" 2>/dev/null; then
+            echo "::error::Base commit ${base_sha} is not available in the checkout."
+            exit 1
+          fi
+
+          git diff --check "$base_sha" HEAD
