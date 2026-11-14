@@ -1,0 +1,85 @@
+# D-HOIP Production - repository ignore rules
+#
+# Local-only AI instructions and private knowledge base.
+# These are deliberately excluded from Git and from GitHub.
+/AGENTS.md
+/.local-ai/
+
+# Project-local agent skills. Skills are local tooling, not production source.
+/.opencode/skills/
+/.opencode/node_modules/
+
+# Environment files and secrets.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+.secrets/
+secrets/
+
+# Dependencies and package-manager caches.
+node_modules/
+.pnp
+.pnp.*
+.yarn/cache/
+.yarn/install-state.gz
+
+# Build output and generated artifacts.
+.next/
+out/
+build/
+dist/
+.turbo/
+.vercel/
+*.tsbuildinfo
+
+# Test output and coverage.
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+
+# Local Supabase state.
+.supabase/
+supabase/.temp/
+supabase/.branches/
+supabase/.env
+supabase/.env.*
+
+# Caches and temporary files.
+.eslintcache
+.cache/
+.tmp/
+temp/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE and editor state.
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Operating-system files.
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Local database dumps and backups. Never commit patient or production data.
+*.dump
+*.sql.gz
+*.backup
+
+# Do not ignore approved production documentation or application source.
+# Migrations under drizzle/ or supabase/migrations/ remain source-controlled.
