@@ -95,20 +95,22 @@ PR requirements:
 
 ## 6. Automated checks
 
-Proposed CI gates, in order:
+Implemented in `.github/workflows/ci.yml`:
 
-1. Install from lockfile; verify lockfile integrity.
-2. Type check.
-3. Lint and formatting check.
-4. Unit tests.
-5. Component and accessibility tests.
-6. Database migration validation against a clean database and an upgrade path.
-7. Database/RLS and integration tests.
-8. Critical Playwright smoke tests.
-9. Dependency vulnerability scan.
-10. Secret scan.
-11. Build verification.
-12. Artifact provenance and checksum (later, when packaging is approved).
+1. Whitespace and patch validation on pull requests to `main` and on all branch pushes.
+2. Application verification: install from lockfile with `npm ci`, type check, and production build.
+
+Proposed additional gates, in order:
+
+1. Lint and formatting check.
+2. Unit tests.
+3. Component and accessibility tests.
+4. Database migration validation against a clean database and an upgrade path.
+5. Database/RLS and integration tests.
+6. Critical Playwright smoke tests.
+7. Dependency vulnerability scan.
+8. Secret scan.
+9. Artifact provenance and checksum (later, when packaging is approved).
 
 A failing required check blocks merge. Do not weaken a test or skip a check to make a build pass
 without an approved waiver.
@@ -242,8 +244,10 @@ request bodies, or payment details in ordinary logs.
 
 ## 17. Current status
 
-No CI pipeline, branch protection, environment, secret store, backup, monitoring, or deployment is
-configured. This is a proposal only. Do not create repositories, configure services, or deploy.
+The D-HOIP CI workflow runs whitespace and patch validation plus application typecheck and
+production build. Branch protection, environments, secret stores, backups, monitoring, and
+deployment are not configured. The remaining delivery lifecycle is a proposal only. Do not create
+repositories, configure services, or deploy.
 
 ## 18. Related documents
 

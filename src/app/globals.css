@@ -1,0 +1,120 @@
+:root {
+  color-scheme: light;
+  --paper: #f1f4f2;
+  --surface: #ffffff;
+  --surface-subtle: #f7f9f8;
+  --surface-muted: #e8edeb;
+  --ink: #101719;
+  --ink-muted: #586466;
+  --ink-faint: #616d6f;
+  --line: #d3dcd9;
+  --line-strong: #b8c5c1;
+  --teal: #1f4e4e;
+  --teal-deep: #153b3b;
+  --teal-soft: #e4efed;
+  --crimson: #b03a2e;
+  --crimson-soft: #f8e8e5;
+  --amber: #8a5b16;
+  --amber-soft: #f6eddc;
+  --slate-soft: #edf0ef;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --sidebar-width: 252px;
+  --header-height: 64px;
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono",
+    monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--paper);
+}
+
+body {
+  min-height: 100dvh;
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: #cfe1dd;
+  color: var(--ink);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

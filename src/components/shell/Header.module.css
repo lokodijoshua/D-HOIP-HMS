@@ -1,0 +1,153 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: var(--header-height);
+  border-bottom: 1px solid var(--line);
+  background: rgba(241, 244, 242, 0.94);
+  backdrop-filter: blur(10px);
+}
+
+/* Chromium paints backdrop-filter layers above the modal dialog top layer. */
+:global(body:has(dialog[open])) .header {
+  backdrop-filter: none;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 1440px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.menuButton {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-muted);
+}
+
+.menuButton:hover {
+  border-color: var(--line-strong);
+  color: var(--teal);
+}
+
+.context {
+  min-width: 0;
+}
+
+.breadcrumb {
+  overflow: hidden;
+  color: var(--ink-faint);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.breadcrumbDivider,
+.breadcrumbContext {
+  display: none;
+}
+
+.breadcrumbDivider {
+  margin: 0 4px;
+  color: var(--line-strong);
+}
+
+@media (min-width: 480px) {
+  .breadcrumbDivider,
+  .breadcrumbContext {
+    display: inline;
+  }
+}
+
+.title {
+  margin-top: 2px;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.environment {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+
+.demo {
+  padding: 4px 7px;
+  border: 1px solid #e0cba5;
+  background: var(--amber-soft);
+  color: var(--amber);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .inner {
+    gap: 16px;
+  }
+
+  .environment {
+    display: inline-flex;
+  }
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    padding: 0 32px;
+  }
+
+  .menuButton {
+    display: none;
+  }
+
+  .title {
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .inner {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+}
