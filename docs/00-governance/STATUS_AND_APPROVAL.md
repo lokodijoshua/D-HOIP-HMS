@@ -108,11 +108,68 @@ Risk accepted (if any):
 | 3 | BLOCKED | RLS unvalidated; MFA/step-up unresolved; permissions matrix not approved |
 | 4 | BLOCKED | No approved schema; Stage B spike not executed; money precision unresolved |
 | 5 | BLOCKED | No implementation authorization |
-| 6 | NOT STARTED | No application or test harness exists |
+| 6 | NOT STARTED | UI-only application shell exists; no automated application test harness has been established |
 | 7 | NOT STARTED | No deployment or operational readiness |
 | 8 | NOT STARTED | No release |
 
-## 8. Related documents
+Gate 5 remains BLOCKED. The authorization in §8 is a narrow, scoped implementation authorization
+for a UI-only shell and its CI verification. It does not satisfy Gate 5 evidence, and it does not
+advance any gate.
+
+## 8. Recorded implementation authorization
+
+The following scoped authorization was issued by the project owner, Joshua Lokodi, for the
+existing UI-only application shell and its CI verification. It is recorded here because it is the
+only application implementation authorized in this repository.
+
+```text
+Decision / gate: Scoped implementation authorization - existing UI foundation and CI only
+Decision ID: AUTH-UI-SHELL-001
+Status: APPROVED WITH CONDITIONS
+Approver role: Project owner
+Approver name: Joshua Lokodi
+Date: 2026-11-16
+Scope:
+  - the existing UI-only application shell in src/ including the dashboard preview, the bounded
+    corrections to active navigation, mobile drawer lifecycle, header context, provisional
+    design-foundation wording, and department/service navigation terminology, and the following
+    eight approved corrections to that existing shell:
+      A. mobile drawer stacking, so the native modal dialog and its backdrop correctly cover the
+         sticky header;
+      B. sidebar scrolling with a pinned footer and a discoverable scroll affordance;
+      C. navigation trigger accessibility state that tracks the drawer;
+      D. responsive operational-table overflow handling, sticky Reference column, and scroll
+         indication;
+      E. minimum functional typography sizing;
+      F. removal of decorative planned indicators;
+      G. simplification of planned-state announcements for assistive technology;
+      H. conditional operational-table keyboard focusability;
+  - reduced-motion handling for existing non-essential transitions;
+  - README and project-status reconciliation for the implemented UI shell;
+  - the pinned application dependencies: Next.js 16.4.6, React 19.3.1, React DOM 19.3.1,
+    TypeScript 5.9.3, @types/node 24.19.2, @types/react 19.3.0, @types/react-dom 19.3.0, and the
+    committed npm lockfile (package-lock.json);
+  - the application CI checks npm run typecheck and npm run build.
+Conditions:
+  - this authorization covers the existing shell and CI work only; it does not authorize new UI
+    features or further application capabilities;
+  - authentication and authorization implementation remain unauthorized;
+  - database provisioning, schema, and migrations remain unauthorized;
+  - patient, encounter, clinical, nursing, and ward workflows remain unauthorized;
+  - real patient or hospital data remain unauthorized;
+  - billing, payments, claims, and financial logic remain unauthorized;
+  - external integrations and production deployment remain unauthorized;
+  - committing, pushing, opening a pull request, and merging remain unauthorized without a
+    separate instruction;
+  - Gate 5 remains BLOCKED, and no future gate is approved by this record;
+  - CSS tokens and components remain a provisional UI foundation, not an approved design system.
+Evidence links: Project-owner instruction for the "Final Pre-Staging Corrections" task, received
+2026-11-16, and the prior "Application Shell Corrections and CI Foundation" instruction.
+Expiry or review date: Review when the shell corrections are reviewed. No standing authorization.
+Risk accepted: None recorded beyond the stated limitations.
+```
+
+## 9. Related documents
 
 - `docs/00-governance/SOURCE_AUTHORITY.md`
 - `docs/00-governance/CONFLICT_REGISTER.md`

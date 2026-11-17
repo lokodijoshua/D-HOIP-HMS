@@ -14,9 +14,10 @@ around one central patient record and one set of auditable workflows rather than
 copies of patient, financial, or inventory data.
 
 The repository is currently in an engineering foundation phase. It contains governance and
-architecture documentation, delivery standards, repository configuration, and a minimal CI
-workflow. No application code, database schema, authentication configuration, or production
-deployment exists yet.
+architecture documentation, delivery standards, repository configuration, CI, and a UI-only
+application shell with synthetic demonstration data. No database schema, authentication
+configuration, clinical or financial workflow, external integration, or production deployment
+exists yet.
 
 ## Vision and objectives
 
@@ -50,30 +51,56 @@ The following domains form the planned system scope. They are not implemented mo
 | Laboratory and radiology | Request and result workflows, released-only department queues, verification, and critical-result handling. |
 | Pharmacy and inventory | Prescription review, costing, paid-quantity dispensing, stock movements, batches, expiry, recalls, and controlled medicines. |
 | HMO and claims | Manual enrollment, coverage checks, claim lifecycle, receivables, remittances, and reconciliation without an API dependency. |
-| Theatre and other departments | Theatre, maternity, ophthalmology, procurement, workforce, facilities, and patient-safety workflows as proposed operational modules. |
+| Theatre and specialist services | Theatre, maternity, ophthalmology, procurement, workforce, facilities, and patient-safety workflows as proposed operational workspaces. |
 
 ## Technology direction
 
-The stack below is the documented direction. No application dependency is installed, and no stack
-component has been validated in this repository.
+The stack below is the documented direction. Only the UI shell and its CI checks are implemented;
+the remaining rows describe direction or proposals, not completed work. Versions are pinned in
+`package.json` and `package-lock.json`.
 
 | Layer | Selected or proposed technology | Status |
 |---|---|---|
-| Application framework | Next.js App Router | Selected direction; not installed or validated |
-| UI runtime | React | Selected direction; not installed |
-| Language | TypeScript | Selected direction; not installed |
+| Application framework | Next.js App Router | Implemented in the UI shell (16.4.6) |
+| UI runtime | React | Implemented in the UI shell (19.3.1) |
+| Language | TypeScript | Implemented in the UI shell (5.9.3, strict) |
 | Database | PostgreSQL | Selected direction; not provisioned |
-| Data access and migrations | Drizzle ORM with SQL migrations | Selected direction; subject to validation |
+| Data access and migrations | Drizzle ORM with SQL migrations | Selected direction; not installed or validated |
 | Authentication | Clerk | Selected direction; not configured |
 | Managed database infrastructure | Supabase-managed PostgreSQL | Selected direction; hosting and residency unresolved |
-| UI and design system | "Clinical Chart" design system and role workspaces | Proposed; component library and design tokens unresolved |
+| UI and design system | Provisional CSS tokens and components; "Clinical Chart" direction | Tokens and components implemented provisionally; design system not approved |
 | Source control | Git and GitHub | In use |
-| Continuous integration | GitHub Actions | Configured for whitespace and patch checks |
+| Continuous integration | GitHub Actions | Whitespace check plus application typecheck and production build |
 | Testing | Vitest, React Testing Library, pgTAP, Playwright, axe | Proposed; not installed |
 | Production hosting | Not selected | Unresolved |
 
-No versions are stated because no runtime or dependency version has been selected or validated.
-The production component library, typography, and design tokens also remain unresolved.
+No design system, production component library, typography scale, or database technology has been
+validated. The UI shell does not constitute approval of those decisions.
+
+## Implemented scope (UI only)
+
+The repository contains a UI-only application shell and a synthetic dashboard preview. It is a
+foundation preview, not a hospital system.
+
+Implemented:
+
+- Next.js App Router shell with a responsive sidebar, header, and mobile navigation drawer;
+- a synthetic dashboard that clearly labels all figures as demonstration data;
+- provisional CSS design tokens, dashboard components, and a reduced-motion treatment;
+- TypeScript checking and a production build configured in GitHub Actions.
+
+Not implemented or authorized by this scope:
+
+- authentication, authorization, or staff accounts;
+- database provisioning, schema, migrations, or Drizzle integration;
+- patient, encounter, clinical, nursing, ward, laboratory, radiology, pharmacy, or theatre
+  workflows;
+- billing, payments, claims, HMO, or financial logic;
+- real patient or hospital data;
+- external integrations, hosting, deployment, or production operations.
+
+See the scoped authorization in
+[`docs/00-governance/STATUS_AND_APPROVAL.md`](docs/00-governance/STATUS_AND_APPROVAL.md) §8.
 
 ## Architecture overview
 
@@ -108,27 +135,26 @@ or validated, and the database access model remains subject to a technical valid
 The intended development workflow uses short-lived branches and pull requests into `main`. Changes
 should be reviewed before merge; direct commits to `main` are not part of the documented workflow.
 
-The repository currently has one GitHub Actions workflow,
+The repository has one GitHub Actions workflow,
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml), named **D-HOIP CI**.
 
 Current behavior:
 
 - runs on pull requests targeting `main` and on pushes to all branches;
 - requests only `contents: read` permissions;
-- checks out full Git history with persisted credentials disabled;
-- runs the **Whitespace and patch check** job;
-- uses `git diff --check` between the applicable base commit and `HEAD`;
-- for pull requests, the base is the pull request base SHA; for pushes, it is the previous commit;
-- for an initial push with no previous commit, checks the full tree against Git's empty tree;
-- fails when the base commit is unavailable or when whitespace or patch errors are detected.
+- runs the **Whitespace and patch check** job, which applies `git diff --check` between the
+  applicable base commit and `HEAD`; for pull requests the base is the pull request base SHA, and
+  for pushes it is the previous commit; an initial push with no previous commit is checked against
+  Git's empty tree; the check fails when the base commit is unavailable or whitespace or patch
+  errors are detected;
+- runs the **Application verification** job, which pins Node.js 24.22.3, installs dependencies with
+  `npm ci`, and runs `npm run typecheck` and `npm run build`.
 
 Branch protection and required-check enforcement are not defined in this repository. Whether they
 are enabled for `main` cannot be verified from version-controlled files and is not asserted here.
 
-The broader CI pipeline is planned, not active. Future checks are expected to include dependency
-installation from a lockfile, type checking, linting, unit and component tests, database and RLS
-tests, end-to-end tests, accessibility checks, dependency and secret scanning, and build
-verification. No application pipeline can run until an application foundation exists.
+Linting, unit and component tests, database and RLS tests, end-to-end tests, accessibility checks,
+and dependency and secret scanning remain proposed and are not active.
 
 ## Repository structure
 
@@ -149,21 +175,52 @@ verification. No application pipeline can run until an application foundation ex
 │   ├── 03-delivery/
 │   │   └── DEVOPS_LIFECYCLE.md
 │   └── README.md
+├── src/
+│   ├── app/
+│   │   ├── (workspace)/
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   ├── globals.css
+│   │   └── layout.tsx
+│   ├── components/
+│   │   ├── dashboard/
+│   │   └── shell/
+│   └── lib/
+│       ├── demo-data.ts
+│       ├── navigation.ts
+│       └── workspace-context.ts
 ├── .gitattributes
 ├── .gitignore
+├── next.config.ts
+├── next-env.d.ts
+├── package-lock.json
+├── package.json
+├── tsconfig.json
 └── README.md
 ```
 
 ## Getting started
 
-The repository currently contains documentation, repository configuration, and CI only. There is
-no application scaffold, package manifest, database schema, environment template, or runnable
-service.
+Prerequisites: Node.js 24.22.3 for parity with CI (the manifest requires >=20.9.0) and npm.
 
-No application prerequisites or setup commands are defined yet. Clone the repository and start
-with [`docs/README.md`](docs/README.md) for the documentation map. Installation, local
-development, database setup, and environment configuration instructions will be added when the
-application foundation is approved and created.
+```powershell
+npm ci
+npm run dev
+```
+
+Open `http://localhost:3000`. Only synthetic demonstration data is shown. No environment file,
+database, authentication provider, or external service is required or configured.
+
+| Script | Purpose |
+|---|---|
+| `npm run dev` | Start the local development server |
+| `npm run build` | Create a production build |
+| `npm run start` | Serve a production build |
+| `npm run typecheck` | Run `tsc --noEmit` |
+
+Linting and automated tests are not installed. See
+[`docs/README.md`](docs/README.md) for the documentation map. Database setup and environment
+configuration are not defined because no database or authentication work is authorized.
 
 ## Engineering standards
 
@@ -181,7 +238,7 @@ application foundation is approved and created.
 ## Project status
 
 **Phase:** initialization and foundation review. The platform is not deployed, production-ready,
-tested, or operational.
+or operational, and automated application tests do not exist.
 
 | Area | Status |
 |---|---|
@@ -189,10 +246,12 @@ tested, or operational.
 | Architecture foundation | Proposed for review |
 | Delivery and operations lifecycle | Proposed for review |
 | CI whitespace and patch check | Configured |
-| Application scaffold | Not created |
-| Dependencies and package manifest | Not created |
+| CI application verification (typecheck and build) | Configured |
+| Application scaffold | UI-only shell created |
+| Dependencies and package manifest | Pinned in package.json and package-lock.json (Next.js, React, TypeScript) |
 | Database schema and migrations | Not created |
 | Authentication and authorization implementation | Not created |
+| Clinical, billing, and integration workflows | Not created |
 | Automated application tests | Not created |
 | Hosting, deployment, and backups | Not selected or configured |
 | Production readiness | Not established |

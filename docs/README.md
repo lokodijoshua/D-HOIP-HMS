@@ -9,7 +9,10 @@ The documentation structure is **proposed** and under initialization review. Doc
 `PROPOSED` are not approved. Approved decisions must name the approver, date, scope, and any
 conditions.
 
-No application implementation is authorized by any document in this repository.
+No application implementation is authorized by any document in this repository, except the narrow
+UI-shell, pinned-dependency, and CI authorization recorded in
+[`00-governance/STATUS_AND_APPROVAL.md`](00-governance/STATUS_AND_APPROVAL.md) §8. All other
+implementation remains unauthorized.
 
 ## 2. Source authority
 
@@ -112,3 +115,9 @@ Current phase: **initialization and foundation review**.
 Authorized work is limited to investigation, organization, documentation, and environment
 foundation. Do not begin application implementation, install application dependencies, create
 schemas or migrations, configure production services, or commit/push/merge.
+
+The single exception is the scoped, owner-authorized UI-only shell, its pinned dependencies, and
+its CI typecheck/build checks recorded in
+[`00-governance/STATUS_AND_APPROVAL.md`](00-governance/STATUS_AND_APPROVAL.md) §8. Authentication,
+database work, clinical or financial workflows, real patient data, external integrations,
+deployment, and commit/push/merge remain unauthorized.
