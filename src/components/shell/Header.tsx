@@ -45,7 +45,7 @@ export function Header({
         <div className={styles.meta}>
           <span className={styles.environment}>
             <span className={styles.dot} aria-hidden="true" />
-            UI foundation
+            {context.environment ?? "UI foundation"}
           </span>
           <span className={styles.demo}>Synthetic data</span>
         </div>

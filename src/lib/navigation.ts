@@ -16,10 +16,13 @@ export const navigationGroups: NavigationGroup[] = [
     items: [{ label: "Dashboard", href: "/" }],
   },
   {
-    label: "Patient & clinical",
+    label: "Patient records",
+    items: [{ label: "Patient directory", href: "/patients" }],
+  },
+  {
+    label: "Clinical",
     planned: true,
     items: [
-      { label: "Patient directory" },
       { label: "Encounters" },
       { label: "Consultation" },
       { label: "Nursing" },
