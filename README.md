@@ -14,10 +14,10 @@ around one central patient record and one set of auditable workflows rather than
 copies of patient, financial, or inventory data.
 
 The repository is currently in an engineering foundation phase. It contains governance and
-architecture documentation, delivery standards, repository configuration, CI, and a UI-only
-application shell with synthetic demonstration data. No database schema, authentication
-configuration, clinical or financial workflow, external integration, or production deployment
-exists yet.
+architecture documentation, delivery standards, repository configuration, CI, a UI application
+shell with synthetic demonstration data, and a synthetic-only Patient Management M1 preview. No
+database schema, authentication configuration, operational clinical or financial workflow, external
+integration, or production deployment exists yet.
 
 ## Vision and objectives
 
@@ -70,37 +70,52 @@ the remaining rows describe direction or proposals, not completed work. Versions
 | Managed database infrastructure | Supabase-managed PostgreSQL | Selected direction; hosting and residency unresolved |
 | UI and design system | Provisional CSS tokens and components; "Clinical Chart" direction | Tokens and components implemented provisionally; design system not approved |
 | Source control | Git and GitHub | In use |
-| Continuous integration | GitHub Actions | Whitespace check plus application typecheck and production build |
-| Testing | Vitest, React Testing Library, pgTAP, Playwright, axe | Proposed; not installed |
+| Continuous integration | GitHub Actions | Whitespace check plus application typecheck, tests, and production build |
+| Testing | Vitest, React Testing Library, pgTAP, Playwright, axe | Vitest installed for M1 domain/workflow tests; other tools proposed |
 | Production hosting | Not selected | Unresolved |
 
 No design system, production component library, typography scale, or database technology has been
-validated. The UI shell does not constitute approval of those decisions.
+validated. The UI shell and synthetic patient preview do not constitute approval of those
+decisions.
 
-## Implemented scope (UI only)
+## Implemented scope (synthetic preview)
 
-The repository contains a UI-only application shell and a synthetic dashboard preview. It is a
-foundation preview, not a hospital system.
+The repository contains an application shell, a synthetic dashboard preview, and a synthetic-only
+Patient Management M1 registry preview. It is a foundation preview, not a hospital system.
 
 Implemented:
 
 - Next.js App Router shell with a responsive sidebar, header, and mobile navigation drawer;
 - a synthetic dashboard that clearly labels all figures as demonstration data;
+- a synthetic patient directory, search-first registration, duplicate-candidate review, server-side
+  duplicate recheck, `D2C-YYYY-NNNNNN` preview ID allocation, and patient profile;
+- an in-memory synthetic patient repository and illustrative in-memory audit events;
+- a production fail-closed guard for all patient routes and actions;
 - provisional CSS design tokens, dashboard components, and a reduced-motion treatment;
-- TypeScript checking and a production build configured in GitHub Actions.
+- Vitest domain/workflow tests, TypeScript checking, and a production build configured in GitHub
+  Actions.
+
+The patient preview is not an operational registry. It cannot accept real patient data and is
+disabled in production. See
+[`docs/02-architecture/PATIENT_REGISTRY_M1.md`](docs/02-architecture/PATIENT_REGISTRY_M1.md).
+Production readiness for this and every other feature is tracked in the
+[`docs/00-governance/PRODUCTION_READINESS_REGISTER.md`](docs/00-governance/PRODUCTION_READINESS_REGISTER.md).
+A passing test suite, successful build, or working demonstration does not make a feature
+production-ready.
 
 Not implemented or authorized by this scope:
 
 - authentication, authorization, or staff accounts;
 - database provisioning, schema, migrations, or Drizzle integration;
-- patient, encounter, clinical, nursing, ward, laboratory, radiology, pharmacy, or theatre
-  workflows;
+- operational patient registration, persistence, encounters, clinical, nursing, ward, laboratory,
+  radiology, pharmacy, or theatre workflows;
 - billing, payments, claims, HMO, or financial logic;
 - real patient or hospital data;
 - external integrations, hosting, deployment, or production operations.
 
-See the scoped authorization in
-[`docs/00-governance/STATUS_AND_APPROVAL.md`](docs/00-governance/STATUS_AND_APPROVAL.md) §8.
+See the scoped authorizations in
+[`docs/00-governance/STATUS_AND_APPROVAL.md`](docs/00-governance/STATUS_AND_APPROVAL.md) sections 8
+and 9.
 
 ## Architecture overview
 

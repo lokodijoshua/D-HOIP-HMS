@@ -10,9 +10,16 @@ The documentation structure is **proposed** and under initialization review. Doc
 conditions.
 
 No application implementation is authorized by any document in this repository, except the narrow
-UI-shell, pinned-dependency, and CI authorization recorded in
-[`00-governance/STATUS_AND_APPROVAL.md`](00-governance/STATUS_AND_APPROVAL.md) §8. All other
-implementation remains unauthorized.
+UI-shell, pinned-dependency, and CI authorization and the synthetic-only Patient Management M1
+authorization recorded in
+[`00-governance/STATUS_AND_APPROVAL.md`](00-governance/STATUS_AND_APPROVAL.md) sections 8 and 9. All
+other implementation remains unauthorized.
+
+Feature production readiness is tracked separately in the
+[`00-governance/PRODUCTION_READINESS_REGISTER.md`](00-governance/PRODUCTION_READINESS_REGISTER.md).
+That register is authoritative for whether a feature is a synthetic preview, a development
+implementation, production-ready, or deployed to production. Tests, builds, and demonstrations do
+not by themselves make a feature production-ready.
 
 ## 2. Source authority
 
@@ -44,15 +51,21 @@ form is:
 - **HISTORICAL** - retained for context; not current authority.
 - **DEPRECATED** - not to be used for new work.
 
+These labels describe documentation and approval status. They do not mean that a feature is
+production-ready or deployed. Feature readiness is classified in the
+[`00-governance/PRODUCTION_READINESS_REGISTER.md`](00-governance/PRODUCTION_READINESS_REGISTER.md).
+
 ## 4. Current production documents
 
 | Document | Purpose | Status |
 |---|---|---|
 | `00-governance/SOURCE_AUTHORITY.md` | Source hierarchy and handling rules | Proposed |
 | `00-governance/STATUS_AND_APPROVAL.md` | Status vocabulary, gates, approval evidence | Proposed |
+| `00-governance/PRODUCTION_READINESS_REGISTER.md` | Authoritative feature production-readiness register and required evidence checklist | Governance register; no feature production approval |
 | `00-governance/CONFLICT_REGISTER.md` | Consolidated conflicts and open decisions | Investigation register |
 | `01-requirements/CONFIRMED_PROJECT_DIRECTION.md` | Owner-confirmed direction and its reconciliation status | Pending formal approval |
 | `02-architecture/ARCHITECTURE_FOUNDATION.md` | Proposed architecture foundation across all domains | Proposed |
+| `02-architecture/PATIENT_REGISTRY_M1.md` | Synthetic-only Patient Management M1 scope, identity fields, duplicate rules, and production guard | Approved synthetic preview scope |
 | `03-delivery/DEVOPS_LIFECYCLE.md` | Proposed delivery, release, and operations lifecycle | Proposed |
 
 ## 5. Proposed documentation structure
@@ -81,10 +94,11 @@ docs/
 2. `docs/README.md` (this file)
 3. `00-governance/SOURCE_AUTHORITY.md`
 4. `00-governance/STATUS_AND_APPROVAL.md`
-5. `00-governance/CONFLICT_REGISTER.md`
-6. `01-requirements/CONFIRMED_PROJECT_DIRECTION.md`
-7. `02-architecture/ARCHITECTURE_FOUNDATION.md`
-8. `03-delivery/DEVOPS_LIFECYCLE.md`
+5. `00-governance/PRODUCTION_READINESS_REGISTER.md`
+6. `00-governance/CONFLICT_REGISTER.md`
+7. `01-requirements/CONFIRMED_PROJECT_DIRECTION.md`
+8. `02-architecture/ARCHITECTURE_FOUNDATION.md`
+9. `03-delivery/DEVOPS_LIFECYCLE.md`
 
 Then read only the documents relevant to the task. Do not load the entire documentation set
 indiscriminately.
@@ -112,12 +126,14 @@ reject, waive, or accept risk.
 
 Current phase: **initialization and foundation review**.
 
-Authorized work is limited to investigation, organization, documentation, and environment
-foundation. Do not begin application implementation, install application dependencies, create
-schemas or migrations, configure production services, or commit/push/merge.
+Outside the recorded scoped authorizations, work is limited to investigation, organization,
+documentation, and environment foundation. Do not begin further application implementation,
+install unapproved dependencies, create schemas or migrations, configure production services, or
+commit/push/merge.
 
-The single exception is the scoped, owner-authorized UI-only shell, its pinned dependencies, and
-its CI typecheck/build checks recorded in
-[`00-governance/STATUS_AND_APPROVAL.md`](00-governance/STATUS_AND_APPROVAL.md) §8. Authentication,
-database work, clinical or financial workflows, real patient data, external integrations,
-deployment, and commit/push/merge remain unauthorized.
+The exceptions are the scoped, owner-authorized UI shell and its CI checks, and the synthetic-only
+Patient Management M1 preview with its approved Vitest tests, recorded in
+[`00-governance/STATUS_AND_APPROVAL.md`](00-governance/STATUS_AND_APPROVAL.md) sections 8 and 9.
+Authentication, production authorization, database work, RLS, persistent audit, real patient data,
+operational clinical or financial workflows, external integrations, deployment, and
+commit/push/merge remain unauthorized.

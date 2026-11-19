@@ -26,6 +26,12 @@ Every substantive statement in D-HOIP documentation should carry one of these la
 Status is not the same as implementation evidence. A feature is not "implemented" because a
 document says it should exist, and it is not "validated" because a design says it will work.
 
+Feature production readiness is tracked separately in
+[`PRODUCTION_READINESS_REGISTER.md`](PRODUCTION_READINESS_REGISTER.md). No status label, test pass,
+build, demonstration, or gate approval in this document makes a feature production-ready or
+deployed to production. Those classifications require the register evidence and explicit human
+approval.
+
 ## 2. Approval classes
 
 | Class | Meaning | Typical approver |
@@ -108,7 +114,7 @@ Risk accepted (if any):
 | 3 | BLOCKED | RLS unvalidated; MFA/step-up unresolved; permissions matrix not approved |
 | 4 | BLOCKED | No approved schema; Stage B spike not executed; money precision unresolved |
 | 5 | BLOCKED | No implementation authorization |
-| 6 | NOT STARTED | UI-only application shell exists; no automated application test harness has been established |
+| 6 | NOT STARTED | M1 has Vitest domain/workflow tests; no full application test harness, security evidence, or approved Gate 6 evidence exists |
 | 7 | NOT STARTED | No deployment or operational readiness |
 | 8 | NOT STARTED | No release |
 
@@ -119,8 +125,8 @@ advance any gate.
 ## 8. Recorded implementation authorization
 
 The following scoped authorization was issued by the project owner, Joshua Lokodi, for the
-existing UI-only application shell and its CI verification. It is recorded here because it is the
-only application implementation authorized in this repository.
+existing UI-only application shell and its CI verification. It is recorded here because it
+authorizes that existing shell implementation.
 
 ```text
 Decision / gate: Scoped implementation authorization - existing UI foundation and CI only
@@ -169,9 +175,82 @@ Expiry or review date: Review when the shell corrections are reviewed. No standi
 Risk accepted: None recorded beyond the stated limitations.
 ```
 
-## 9. Related documents
+## 9. Recorded patient management M1 authorization
+
+The following scoped authorization was issued by the project owner for a synthetic-only Patient
+Management M1 preview. It is recorded here because it authorizes new patient-registry application
+work.
+
+```text
+Decision / gate: Scoped implementation authorization - Patient Management M1 synthetic preview
+Decision ID: AUTH-PATIENT-M1-001
+Status: APPROVED WITH CONDITIONS
+Approver role: Project owner
+Approver name: Joshua Lokodi
+Date: 2026-11-19
+Scope:
+  - a synthetic-only Patient Management M1 preview in the existing Next.js App Router application,
+    including:
+      1. a patient directory with capped search;
+      2. search-first registration;
+      3. duplicate-candidate review before registration;
+      4. server-side duplicate recheck at registration time;
+      5. hospital patient ID allocation in the approved format D2C-YYYY-NNNNNN;
+      6. a patient profile using the internal UUID as its route identifier;
+      7. a server-side in-memory synthetic patient repository;
+      8. illustrative in-memory audit events;
+      9. automated domain and workflow tests;
+     10. navigation integration and visible synthetic-preview warnings;
+  - patient identity and data fields limited to family, given, middle and preferred names; name
+    completeness/status; sex; exact date of birth or estimated age with unit and as-of date;
+    primary and secondary phones; email; address lines, city, Nigerian state/FCT and postal code;
+    next-of-kin name, relationship and phone; a basic pending/verified identity status;
+    registration timestamp and a synthetic registering-user placeholder;
+  - the simple permanent-format hospital ID D2C-YYYY-NNNNNN, where YYYY is the registration year in
+    Africa/Lagos and NNNNNN is a six-digit monotonically increasing yearly sequence; no check
+    character;
+  - an internal UUID for application routes and record identity;
+  - install of the approved Vitest development dependency and the minimum test configuration;
+  - update of the existing application CI verification job to run the Vitest test command in
+    addition to npm run typecheck and npm run build, preserving existing CI permissions and pinned
+    action versions;
+  - the focused architecture document docs/02-architecture/PATIENT_REGISTRY_M1.md and the minimum
+    README update needed to describe the preview accurately.
+Conditions:
+  - this is a synthetic demonstration only and must never be used with real patient data or PHI;
+  - patient routes and all patient registration, read and write actions must fail closed based
+    unconditionally on the production runtime; no environment variable or configuration switch may
+    enable the feature in production;
+  - the in-memory repository is a preview mechanism only and provides no production-safe
+    concurrency, durability or cross-instance uniqueness;
+  - the in-memory audit events are illustrative and do not constitute a compliant, tamper-proof or
+    append-only audit trail;
+  - no browser local storage, session storage, cookies or other browser persistence may hold
+    patient records;
+  - no database, API integration, external service, real authentication, production permission
+    enforcement, RLS or persistent audit is authorized;
+  - no patient correction, merge or deletion workflow is authorized;
+  - no encounter, clinical, nursing, ward, billing, payments, claims, HMO, allergy, alert, payer,
+    insurance, guarantor, consent or document-upload workflow is authorized;
+  - no Registry department may be created; department ownership remains subject to the existing
+    unresolved governance decisions;
+  - real patient or hospital data remains unauthorized;
+  - external integrations and production deployment remain unauthorized;
+  - committing, pushing, opening a pull request, and merging remain unauthorized without a separate
+    instruction;
+  - Gate 5 remains BLOCKED, and this record does not approve any gate or future capability;
+  - production authentication, authorization, PostgreSQL persistence, RLS and persistent audit
+    remain blocked pending their own approvals and infrastructure readiness.
+Evidence links: Project-owner instruction "D-HOIP - Implement Patient Management M1", received
+2026-11-19, approving the M1 proposal with the simple D2C-YYYY-NNNNNN patient ID format.
+Expiry or review date: Review when M1 is accepted or superseded; no standing authorization.
+Risk accepted: Synthetic preview only. No production use or real patient data.
+```
+
+## 10. Related documents
 
 - `docs/00-governance/SOURCE_AUTHORITY.md`
+- `docs/00-governance/PRODUCTION_READINESS_REGISTER.md`
 - `docs/00-governance/CONFLICT_REGISTER.md`
 - `docs/03-delivery/DEVOPS_LIFECYCLE.md`
 - `.local-ai/instructions/approval-gates.md`
