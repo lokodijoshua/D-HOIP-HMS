@@ -15,8 +15,9 @@ copies of patient, financial, or inventory data.
 
 The repository is currently in an engineering foundation phase. It contains governance and
 architecture documentation, delivery standards, repository configuration, CI, a UI application
-shell with synthetic demonstration data, and a synthetic-only Patient Management M1 preview. No
-database schema, authentication configuration, operational clinical or financial workflow, external
+shell with synthetic demonstration data, a synthetic-only Patient Management M1 preview, and a
+non-production Stage B authentication/database security scaffold. No production database schema,
+production authentication configuration, operational clinical or financial workflow, external
 integration, or production deployment exists yet.
 
 ## Vision and objectives
@@ -55,9 +56,9 @@ The following domains form the planned system scope. They are not implemented mo
 
 ## Technology direction
 
-The stack below is the documented direction. Only the UI shell and its CI checks are implemented;
-the remaining rows describe direction or proposals, not completed work. Versions are pinned in
-`package.json` and `package-lock.json`.
+The stack below is the documented direction. The UI shell, synthetic M1 preview, and non-production
+Stage B security scaffold are implemented; the remaining rows describe direction or proposals, not
+completed or validated work. Versions are pinned in `package.json` and `package-lock.json`.
 
 | Layer | Selected or proposed technology | Status |
 |---|---|---|
@@ -65,23 +66,24 @@ the remaining rows describe direction or proposals, not completed work. Versions
 | UI runtime | React | Implemented in the UI shell (19.3.1) |
 | Language | TypeScript | Implemented in the UI shell (5.9.3, strict) |
 | Database | PostgreSQL | Selected direction; not provisioned |
-| Data access and migrations | Drizzle ORM with SQL migrations | Selected direction; not installed or validated |
-| Authentication | Clerk | Selected direction; not configured |
+| Data access and migrations | Drizzle ORM with SQL migrations | Scaffolding installed (0.45.4/0.31.11); no production schema or migrations; synthetic probe RLS validated, production RLS not |
+| Authentication | Clerk | Server scaffold and development keys present; no live request/session validation or sign-in UI |
 | Managed database infrastructure | Supabase-managed PostgreSQL | Selected direction; hosting and residency unresolved |
 | UI and design system | Provisional CSS tokens and components; "Clinical Chart" direction | Tokens and components implemented provisionally; design system not approved |
 | Source control | Git and GitHub | In use |
 | Continuous integration | GitHub Actions | Whitespace check plus application typecheck, tests, and production build |
-| Testing | Vitest, React Testing Library, pgTAP, Playwright, axe | Vitest installed for M1 domain/workflow tests; other tools proposed |
+| Testing | Vitest, React Testing Library, pgTAP, Playwright, axe | Vitest installed for M1 and Stage B unit tests; live DB/RLS tests are gated; other tools proposed |
 | Production hosting | Not selected | Unresolved |
 
 No design system, production component library, typography scale, or database technology has been
 validated. The UI shell and synthetic patient preview do not constitute approval of those
 decisions.
 
-## Implemented scope (synthetic preview)
+## Implemented scope (synthetic preview and security scaffold)
 
-The repository contains an application shell, a synthetic dashboard preview, and a synthetic-only
-Patient Management M1 registry preview. It is a foundation preview, not a hospital system.
+The repository contains an application shell, a synthetic dashboard preview, a synthetic-only
+Patient Management M1 registry preview, and a non-patient Stage B authentication/database security
+scaffold. It is a foundation preview, not a hospital system.
 
 Implemented:
 
@@ -91,9 +93,13 @@ Implemented:
   duplicate recheck, `D2C-YYYY-NNNNNN` preview ID allocation, and patient profile;
 - an in-memory synthetic patient repository and illustrative in-memory audit events;
 - a production fail-closed guard for all patient routes and actions;
+- a non-production Stage B scaffold: Clerk middleware and server subject verification, active
+  employee-link checking, Drizzle transaction claims and `SET LOCAL ROLE authenticated`, synthetic
+  probe tables and RLS policies, unit tests, gated live database/RLS and actual-helper tests, and a
+  production-disabled probe route;
 - provisional CSS design tokens, dashboard components, and a reduced-motion treatment;
-- Vitest domain/workflow tests, TypeScript checking, and a production build configured in GitHub
-  Actions.
+- Vitest domain/workflow and Stage B unit tests, TypeScript checking, and a production build
+  configured in GitHub Actions.
 
 The patient preview is not an operational registry. It cannot accept real patient data and is
 disabled in production. See
@@ -103,10 +109,17 @@ Production readiness for this and every other feature is tracked in the
 A passing test suite, successful build, or working demonstration does not make a feature
 production-ready.
 
+The Stage B probe is synthetic. Its development Supabase, RLS, actual-helper, and controlled real
+Clerk development-session request tests pass, but production authentication, authorization, and RLS
+remain unverified. The temporary real-session fixtures were cleaned up per operator report; repeating
+that test requires recreating approved fixtures. RLS is validated only for the synthetic probe, not
+for production. See
+[`docs/02-architecture/STAGE_B_DATABASE_SECURITY_SPIKE.md`](docs/02-architecture/STAGE_B_DATABASE_SECURITY_SPIKE.md).
+
 Not implemented or authorized by this scope:
 
-- authentication, authorization, or staff accounts;
-- database provisioning, schema, migrations, or Drizzle integration;
+- production authentication configuration, sign-in UI, staff accounts, or production authorization;
+- production database provisioning, patient schema or migrations, or validated RLS;
 - operational patient registration, persistence, encounters, clinical, nursing, ward, laboratory,
   radiology, pharmacy, or theatre workflows;
 - billing, payments, claims, HMO, or financial logic;
@@ -114,8 +127,8 @@ Not implemented or authorized by this scope:
 - external integrations, hosting, deployment, or production operations.
 
 See the scoped authorizations in
-[`docs/00-governance/STATUS_AND_APPROVAL.md`](docs/00-governance/STATUS_AND_APPROVAL.md) sections 8
-and 9.
+[`docs/00-governance/STATUS_AND_APPROVAL.md`](docs/00-governance/STATUS_AND_APPROVAL.md) sections 8,
+9, and 10.
 
 ## Architecture overview
 
@@ -142,8 +155,10 @@ Clinical authorization and financial clearance are deliberately separate concern
 financial design uses an append-only ledger with reversals instead of destructive edits. Audit
 records are intended to be append-only and protected from alteration or deletion.
 
-PostgreSQL row-level security is a proposed defense-in-depth measure. It has not been implemented
-or validated, and the database access model remains subject to a technical validation spike.
+PostgreSQL row-level security is a proposed defense-in-depth measure. A synthetic, non-patient
+Stage B probe has live development evidence for its RLS behavior, including actual-helper tests and
+a controlled real Clerk development-session request, but production RLS and the full access model
+remain unvalidated and subject to review.
 
 ## Development and CI
 
@@ -163,13 +178,16 @@ Current behavior:
   Git's empty tree; the check fails when the base commit is unavailable or whitespace or patch
   errors are detected;
 - runs the **Application verification** job, which pins Node.js 24.22.3, installs dependencies with
-  `npm ci`, and runs `npm run typecheck` and `npm run build`.
+  `npm ci`, and runs `npm run typecheck`, `npm test`, and `npm run build`; the live Stage B
+  database/RLS tests skip because CI has no `DATABASE_URL` and does not set
+  `STAGE_B_LIVE_TESTS=1`.
 
 Branch protection and required-check enforcement are not defined in this repository. Whether they
 are enabled for `main` cannot be verified from version-controlled files and is not asserted here.
 
-Linting, unit and component tests, database and RLS tests, end-to-end tests, accessibility checks,
-and dependency and secret scanning remain proposed and are not active.
+Linting, component and end-to-end tests, live database/RLS execution, accessibility checks, and
+dependency and secret scanning remain proposed or are not active. Vitest unit tests run in CI;
+the live Stage B database/RLS test only runs when a dedicated `DATABASE_URL` is supplied.
 
 ## Repository structure
 
@@ -186,7 +204,8 @@ and dependency and secret scanning remain proposed and are not active.
 │   ├── 01-requirements/
 │   │   └── CONFIRMED_PROJECT_DIRECTION.md
 │   ├── 02-architecture/
-│   │   └── ARCHITECTURE_FOUNDATION.md
+│   │   ├── ARCHITECTURE_FOUNDATION.md
+│   │   └── STAGE_B_DATABASE_SECURITY_SPIKE.md
 │   ├── 03-delivery/
 │   │   └── DEVOPS_LIFECYCLE.md
 │   └── README.md
@@ -214,6 +233,9 @@ and dependency and secret scanning remain proposed and are not active.
 └── README.md
 ```
 
+The Stage B additions are `src/proxy.ts`, `drizzle.config.ts`, `.env.example`, `src/server/`,
+`src/app/api/stage-b/`, and `scripts/stage-b/`.
+
 ## Getting started
 
 Prerequisites: Node.js 24.22.3 for parity with CI (the manifest requires >=20.9.0) and npm.
@@ -223,19 +245,22 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`. Only synthetic demonstration data is shown. No environment file,
-database, authentication provider, or external service is required or configured.
+Open `http://localhost:3000`. Only synthetic demonstration data is shown. The synthetic UI runs
+without an environment file, database, or authentication provider. Stage B live checks require a
+dedicated non-production Supabase project, a Clerk development application, and ignored local
+environment values; see [`scripts/stage-b/README.md`](scripts/stage-b/README.md).
 
 | Script | Purpose |
 |---|---|
 | `npm run dev` | Start the local development server |
 | `npm run build` | Create a production build |
 | `npm run start` | Serve a production build |
+| `npm test` | Run Vitest unit tests; live Stage B database tests require `DATABASE_URL` and `STAGE_B_LIVE_TESTS=1` |
 | `npm run typecheck` | Run `tsc --noEmit` |
 
-Linting and automated tests are not installed. See
-[`docs/README.md`](docs/README.md) for the documentation map. Database setup and environment
-configuration are not defined because no database or authentication work is authorized.
+Linting is not installed; Vitest tests are installed. See
+[`docs/README.md`](docs/README.md) for the documentation map. Stage B database setup, probe SQL, and
+environment names are documented in [`scripts/stage-b/README.md`](scripts/stage-b/README.md).
 
 ## Engineering standards
 
@@ -253,7 +278,9 @@ configuration are not defined because no database or authentication work is auth
 ## Project status
 
 **Phase:** initialization and foundation review. The platform is not deployed, production-ready,
-or operational, and automated application tests do not exist.
+or operational. Automated unit tests, synthetic Stage B PostgreSQL/RLS evidence, and a controlled
+real Clerk development-session request exist; production evidence does not. The temporary
+real-session fixtures were cleaned up and must be recreated to repeat that test.
 
 | Area | Status |
 |---|---|
@@ -261,13 +288,14 @@ or operational, and automated application tests do not exist.
 | Architecture foundation | Proposed for review |
 | Delivery and operations lifecycle | Proposed for review |
 | CI whitespace and patch check | Configured |
-| CI application verification (typecheck and build) | Configured |
-| Application scaffold | UI-only shell created |
-| Dependencies and package manifest | Pinned in package.json and package-lock.json (Next.js, React, TypeScript) |
-| Database schema and migrations | Not created |
-| Authentication and authorization implementation | Not created |
+| CI application verification (typecheck, tests, and build) | Configured |
+| Application scaffold | UI shell, synthetic M1 preview, and non-production Stage B security scaffold created |
+| Dependencies and package manifest | Pinned in package.json and package-lock.json (Next.js, React, TypeScript, Clerk, Drizzle, postgres, drizzle-kit) |
+| Database schema and migrations | No production schema or migrations; synthetic Stage B probe SQL only |
+| Authentication and authorization implementation | Stage B server scaffold; synthetic development RLS/helper and controlled real Clerk request path validated; no production authorization or sign-in UI |
 | Clinical, billing, and integration workflows | Not created |
-| Automated application tests | Not created |
+| Automated application tests | Vitest unit tests; gated Stage B RLS/helper suite previously passed; controlled real Clerk request evidence recorded |
+| Stage B RLS validation | Synthetic probe validated, including a real Clerk request; production RLS not established |
 | Hosting, deployment, and backups | Not selected or configured |
 | Production readiness | Not established |
 | License | Not established |
@@ -286,6 +314,7 @@ data residency. These are tracked in the
 - [Conflict and open decision register](docs/00-governance/CONFLICT_REGISTER.md)
 - [Confirmed project direction](docs/01-requirements/CONFIRMED_PROJECT_DIRECTION.md)
 - [Architecture foundation](docs/02-architecture/ARCHITECTURE_FOUNDATION.md)
+- [Stage B authentication and database security spike](docs/02-architecture/STAGE_B_DATABASE_SECURITY_SPIKE.md)
 - [DevOps lifecycle proposal](docs/03-delivery/DEVOPS_LIFECYCLE.md)
 
 ## License
