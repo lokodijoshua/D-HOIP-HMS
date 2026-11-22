@@ -39,7 +39,7 @@ environment implementation and pilot/production approval.
 | CR-014 RLS/access design | - | Yes | - | Yes | Yes | Yes |
 | CR-015 MFA/session policy | - | Yes | Yes | Yes | Yes | Yes |
 | CR-016 Hosting/residency/privacy | - | Privacy inputs | Yes | Environment only | Yes | Yes |
-| DEC-011 Correction/merge inclusion | - | Yes | - | Conditional | Conditional | Conditional |
+| DEC-011 Correction/merge inclusion | - | Yes | - | Correction included; merge deferred | Correction included; merge deferred | Correction included; merge deferred |
 | DEC-012 Department lifecycle | - | - | - | Yes | Yes | Yes |
 | DEC-013 Employee provisioning ownership | - | Yes | - | Yes | Yes | Yes |
 | DEC-014 Audit retention/legal hold | - | Yes | - | - | Conditional | Yes |
@@ -109,7 +109,7 @@ and audit requirements. No policy is selected here.
 
 ### DEC-005 — Encounter foundation scope
 
-**Status:** OPEN.
+**Status:** ARCHITECTURE GATE SELECTED FOUNDATION + MINIMAL WORKFLOW; HOSPITAL RATIFICATION PENDING.
 **Owner:** Director and Medical.
 **Options:**
 
@@ -117,8 +117,10 @@ and audit requirements. No policy is selected here.
 - B. Data foundation plus a minimal create/view/close UI.
 - C. Defer all encounter work to V1.1.
 
-**Technical consequence:** encounter schema, participation links, UI, audit, and pilot scope. The
-V1.0 pack proposes the data foundation as mandatory and the minimal UI as conditional.
+**Technical consequence:** encounter schema, participation links, patient encounter history, explicit
+encounter/association authorization, UI, audit, and pilot scope. The approved V1.0 architecture gate
+requires the encounter foundation, patient encounter history, participants, department associations,
+and a minimal create/view/close workflow in V1.0; full clinical workflow remains V1.1.
 **Blocks:** logical architecture, security/database design, implementation, pilot, production.
 
 ### DEC-006 — Roles, permissions, scopes, and separation of duties
@@ -196,17 +198,18 @@ must receive privacy inputs where data residency or retention affects the design
 
 ### DEC-011 — Patient correction and merge in V1.0
 
-**Status:** OPEN.
+**Status:** CORRECTION INCLUDED BY V1.0 ARCHITECTURE GATE; MERGE UNRESOLVED.
 **Owner:** Director, Records, and Medical.
 **Options:**
 
-- A. Correction only in V1.0.
-- B. Correction plus merge in V1.0.
-- C. Defer both.
+- A. Correction only in V1.0. (Current V1.0 architecture direction.)
+- B. Correction plus merge in V1.0. (Not approved; merge excluded.)
+- C. Defer both. (Rejected for V1.0.)
 
-**Technical consequence:** identity lifecycle scope, audit, merge controls, and duplicate
-containment. Both remain conditional in the traceability matrix and milestone plan.
-**Blocks:** only if included; pilot/production scope must state the choice.
+**Technical consequence:** correction and lifecycle are mandatory V1.0 scope; merge remains a future
+decision. The architecture gate does not replace hospital policy ratification for correction,
+deactivation, deceased status, or merge.
+**Blocks:** correction and lifecycle: no, they are in V1.0; merge: future approval only.
 
 ### DEC-012 — Department disable and history
 

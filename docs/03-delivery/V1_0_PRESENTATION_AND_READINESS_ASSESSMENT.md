@@ -56,9 +56,10 @@ A controlled pilot must not begin until:
 3. Clerk authentication, active employee access, deactivation, and minimum role enforcement work.
 4. The configurable department registry works; the initial department list is hospital-approved and
    loaded only under DEC-016.
-5. Patient registration, permanent identifier, search, duplicate review, and pending/verified
-   identity foundation work persistently.
-6. The encounter data foundation links to patients and records classification and participation.
+5. Patient registration, permanent immutable identifier, search, duplicate review,
+   pending/verified identity, correction history, and lifecycle foundation work persistently.
+6. The encounter foundation links to patients and records classification, participation, department
+   associations, patient encounter history, and the minimal create/view/close workflow.
 7. Minimum sensitive-action audit is durable, append-only, restricted, and operational.
 8. Mandatory V1.0 UAT, accessibility, migration/rollback rehearsal, and training are complete.
 9. CR-016 hosting/residency/privacy and DEC-015 pilot approval are recorded.
@@ -68,13 +69,13 @@ A controlled pilot must not begin until:
 
 These are not mandatory V1.0 pilot prerequisites unless approved:
 
-- Patient correction.
-- Patient merge and reversal.
-- Minimal encounter create/view UI.
 - Full role and permission administration.
 - MFA/step-up beyond the approved baseline.
 - Broader audit administration, retention, legal hold, delegated grants, or tamper evidence.
 - Hosted/staging environment beyond the approved pilot environment.
+
+Patient merge and reversal is excluded from V1.0. It is not a conditional V1.0 capability and
+requires a separate future approval.
 
 If any conditional capability is included, its matching conditional milestone and exit criterion
 apply.

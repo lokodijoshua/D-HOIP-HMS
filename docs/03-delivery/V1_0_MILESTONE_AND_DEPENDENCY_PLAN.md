@@ -31,10 +31,9 @@ M0 Source and scope
                  -> M6 Department registry
                       -> M6-C Initial department data (conditional)
                  -> M7 Persistent patient registry
-                      -> M8 Identity lifecycle
-                           -> M8-C Correction/merge (conditional)
-                      -> M9 Encounter foundation (also requires M6)
-                           -> M9-C Minimal encounter UI (conditional)
+                      -> M8 Identity lifecycle and correction (mandatory)
+                           -> M8-C Patient merge (future, not V1.0)
+                      -> M9 Encounter foundation and minimal encounter workflow (also requires M6)
                  -> M11-C Broader audit hardening (conditional)
             -> M10-C Full role administration (conditional)
   -> M12 Mandatory integration and UAT
@@ -71,6 +70,9 @@ CR-009 minimum audit design; CR-014 design direction.
 **Scope:** conceptual domain model; entity ownership; patient, department, employee, role,
 permission, encounter-foundation, and audit-foundation design; migration and rollback plan; RLS
 design direction.
+
+**Environment:** M1 database validation uses a dedicated development database. Stage B probe
+objects remain untouched and are not removed, modified, or reused as the M1 production schema.
 
 **Exclusions:** applied migrations; feature code; production environment; initial department data.
 
@@ -210,7 +212,7 @@ may proceed in parallel after M5.
 review; pending/verified foundation; profile; reuse of existing patient domain/UI where valid;
 minimum audit.
 
-**Exclusions:** correction/merge unless M8-C approved; clinical history; billing; pharmacy.
+**Exclusions:** patient merge; clinical history; billing; pharmacy.
 
 **Tests/evidence:** persistence; concurrency; ID uniqueness/exhaustion; duplicate review; idempotency;
 restart; scope/authorization.
@@ -219,67 +221,61 @@ restart; scope/authorization.
 
 **Gates:** 6.
 
-### M8 — Identity lifecycle foundation
+### M8 — Identity lifecycle and correction (mandatory)
 
-**Prerequisites:** M7; CR-004.
+**Prerequisites:** M7; CR-004; DEC-011 correction inclusion.
 
-**Scope (mandatory):** pending/verified identity states and approved verification foundation.
+**Scope (mandatory):** pending/verified identity states; approved verification foundation; reasoned
+patient correction with append-only history; active/inactive/deceased lifecycle transitions.
 
-**Exclusions:** correction; merge; reversal; organization-wide duplicate cleanup.
+**Exclusions:** patient merge and reversal; organization-wide duplicate cleanup.
 
-**Tests/evidence:** state transitions; authorization; audit; invalid-transition denial.
+**Tests/evidence:** state transitions; correction/history; lifecycle authorization; audit;
+invalid-transition denial; negative authorization.
 
-**Exit criteria:** mandatory identity-state foundation accepted.
-
-**Gates:** 6.
-
-### M8-C — Patient correction and merge (conditional)
-
-**Condition:** DEC-011 and CR-004 approved.
-
-**Scope:** correction; merge and reversal if approved, with reason, authority, link repointing,
-history preservation, and audit.
-
-**Exclusions:** unapproved merge authority or automatic merge.
-
-**Tests/evidence:** correction; merge; reversal; link integrity; two-person control if approved;
-audit; unauthorized denial.
-
-**Exit criteria:** only the approved subset is accepted; unapproved capabilities remain excluded.
+**Exit criteria:** mandatory identity, correction, and lifecycle foundation accepted.
 
 **Gates:** 6.
 
-### M9 — Encounter foundation
+### M8-C — Patient merge (future, not V1.0)
+
+**Condition:** separate future approval.
+
+**Scope:** merge and reversal with two-person authority, link repointing, history preservation, and
+audit.
+
+**Exit criteria:** not part of V1.0 acceptance.
+
+**Gates:** future.
+
+### M9 — Encounter foundation and minimal encounter workflow
 
 **Prerequisites:** M6, M7; DEC-005.
 
 **Scope:** encounter entity; patient link; classification including emergency; foundation status;
-clinician/department participation; audit.
+clinician/department participation; patient encounter history; explicit encounter and
+association-level authorization; minimal create/view/close UI; audit.
 
-**Exclusions:** full encounter UI unless M9-C approved; clinical notes, orders, results, triage, ward,
-nursing, billing.
+**Exclusions:** clinical notes, orders, results, triage, ward, nursing, billing; full clinical
+workflow.
 
-**Tests/evidence:** patient linkage; classification; participation; status transition; authorization;
-audit; invalid-link denial.
+**Tests/evidence:** patient linkage; classification; participation; status transition; create/view/
+close; encounter and association authorization; audit; invalid-link denial.
 
-**Exit criteria:** encounter data foundation accepted. Full clinical workflow remains V1.1.
-
-**Gates:** 6.
-
-### M9-C — Minimal encounter create/view UI (conditional)
-
-**Condition:** DEC-005 and proposal confirm a minimal UI is in V1.0.
-
-**Scope:** create/view/close the encounter foundation with patient link, classification,
-participation, authorization, and audit.
-
-**Exclusions:** clinical notes, orders, results, triage, ward, billing.
-
-**Tests/evidence:** create/view/close; patient link; participation; denial; audit.
-
-**Exit criteria:** approved minimal UI accepted; not required for mandatory M12 exit.
+**Exit criteria:** encounter foundation, history, participants, department associations, and minimal
+encounter workflow accepted. Full clinical workflow remains V1.1.
 
 **Gates:** 6.
+
+### M9-C — Expanded encounter UI (future, not V1.0)
+
+**Condition:** separate future approval.
+
+**Scope:** expanded encounter and clinical operations UI beyond the V1.0 minimal workflow.
+
+**Exit criteria:** not part of V1.0 acceptance.
+
+**Gates:** future.
 
 ### M10-C — Full role and permission administration (conditional)
 
@@ -313,14 +309,15 @@ unless hospital policy makes them mandatory.
 
 ### M12 — Mandatory V1.0 integration, UAT, and acceptance
 
-**Prerequisites:** M0-M9 mandatory scope; M4-C/M6-C only if approved; M12 does **not** require M8-C,
-M9-C, M10-C, or M11-C.
+**Prerequisites:** M0-M9 mandatory scope, including M8 identity/correction/lifecycle and M9 encounter
+foundation/minimal workflow; M4-C/M6-C only if approved; M12 does **not** require M10-C, M11-C, or
+future merge work.
 
 **Scope:** integrate mandatory V1.0 workflows; accessibility; error/empty/denied states; UAT;
 training notes; operational runbooks; evidence pack.
 
-**Exclusions:** mandatory inclusion of full role administration, minimal encounter UI, correction,
-merge, or broader audit. Conditional capabilities are accepted separately only if approved.
+**Exclusions:** full role administration, expanded encounter/clinical UI, patient merge, and broader
+audit unless separately approved.
 
 **Tests/evidence:** E2E mandatory flows; negative authorization; accessibility; UAT; migration/
 rollback rehearsal; release rehearsal.
@@ -349,9 +346,6 @@ separate.
 
 | Requirement | Conditional milestone | Exit criterion |
 |---|---|---|
-| PAT-06 Patient correction | M8-C | Correction with reason, history, audit |
-| PAT-07 Patient merge/reversal | M8-C | Approved authority, link repointing, reversal, audit |
-| ENC-04 Minimal encounter UI | M9-C | Create/view/close with authorization and audit |
 | AUTH-05 Full role administration | M10-C | Role/scope assignment, SoD, negative tests |
 | AUTH-07 MFA/step-up | M4-C | Approved policy enforced |
 | ORG-04 Initial department list | M6-C | Approved list loaded with audit and rollback |

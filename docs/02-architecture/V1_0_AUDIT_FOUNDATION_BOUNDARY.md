@@ -45,7 +45,18 @@ At minimum:
 Event content must not include unnecessary PHI. Protected values require an approved access and
 redaction design.
 
-### 2.3 Write behavior
+### 2.3 General audit metadata and protected values
+
+- General audit metadata (actor, action, resource type, outcome, correlation ID, reason) must be
+  separated from protected patient/correction values.
+- Protected before/after correction values must not be placed in ordinary application logs,
+  security-event metadata, or general audit metadata.
+- Protected values require a separate protected-field access rule and the approved audit-read
+  permission; `audit.read` alone does not necessarily grant access to every protected value.
+- Correction history must preserve the changed fields and values under restricted access, while the
+  general audit event records that a correction occurred, by whom, when, and why.
+
+### 2.4 Write behavior
 
 - Audit records are append-only.
 - Ordinary application roles must not update or delete audit records.
@@ -55,14 +66,14 @@ redaction design.
 - Failure behavior must be explicit. A sensitive action must not silently succeed without its
   required audit record.
 
-### 2.4 Minimum access
+### 2.5 Minimum access
 
 - A restricted, approved oversight role can read permitted audit records.
 - Ordinary application users cannot browse audit records.
 - Audit access itself is audited where technically feasible.
 - The exact oversight role and scope are subject to CR-009.
 
-### 2.5 Minimum acceptance evidence
+### 2.6 Minimum acceptance evidence
 
 - Sensitive actions produce the required events.
 - Denied actions are recorded where required.

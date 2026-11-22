@@ -55,15 +55,15 @@ Readiness vocabulary follows
 | PAT-01 | Persistent patient registration | M-O | CPD CD-01; ADR 0009; PRR §4 | Synthetic preview | PostgreSQL persistence and workflow | CR-002, CR-004 | Registration, duplicate, persistence tests | Synthetic preview |
 | PAT-02 | Permanent unique hospital identifier | M-F | CPD; ADR 0009 | In-memory allocator | DB sequence, unique constraint, exhaustion handling | CR-004 | Concurrency, uniqueness, exhaustion tests | Synthetic preview |
 | PAT-03 | Patient search | M-O | ADR 0009; PRR §4 | Synthetic search | DB-backed scoped search | CR-004, DEC-006 | Search, cap, scope tests | Synthetic preview |
-| PAT-04 | Duplicate detection and mandatory review | M-O | ADR 0009; PRR §4 | Synthetic rules | Server-issued review reference and DB lookup | CR-004 | Duplicate, override, negative tests | Synthetic preview |
+| PAT-04 | Duplicate detection and mandatory review | M-O | ADR 0009; PRR §4 | Synthetic rules | Server-issued review reference; `patient.duplicate.review`; DB lookup | CR-004 | Duplicate, override, negative tests | Synthetic preview |
 | PAT-05 | Pending and verified identity states | M-F | CPD CD-02/CD-04 | Synthetic status only | Approved verification workflow | CR-004 | State-transition tests | Synthetic preview |
-| PAT-06 | Patient correction | C | AF §6; PRR §4 | None | Correction workflow, reason, audit | CR-004, DEC-011 | Correction/history/audit tests | Not implemented |
-| PAT-07 | Patient merge and reversal | C | AF §6; CR-004 | None | Two-person merge, link repointing, reversal | CR-004, DEC-011 | Merge/reversal/linkage tests | Not implemented |
+| PAT-06 | Patient correction | M-O | AF §6; PRR §4 | None | Correction workflow, reason, permission, audit | CR-004, DEC-011 | Correction/history/audit tests | Not implemented |
+| PAT-07 | Patient merge and reversal | D | AF §6; CR-004 | None | Not V1.0; future approval only | CR-004, DEC-011 | Future merge/reversal tests | Deferred |
 | PAT-08 | Longitudinal patient profile | M-F | CPD; AF §6 | Synthetic profile | Persistent patient identity and read profile | CR-004 | Profile and scope tests | Synthetic preview |
 | ENC-01 | Encounter entity linked to exactly one patient | M-F | AF §6; CPD CD-03 | None | Encounter schema and patient FK | DEC-005 | Linkage and invalid-link tests | Not implemented |
 | ENC-02 | Encounter classification, including emergency | M-F | CPD CD-03; CR-022 | None | Approved type/classification registry | DEC-005 | Classification tests | Not implemented |
 | ENC-03 | Clinician and department participation links | M-F | AF §6; TASK | None | Participation links | DEC-005, CR-001 | Participation and authorization tests | Not implemented |
-| ENC-04 | Minimal encounter create/view/close UI | C | BP; TASK | None | Basic workflow only if approved | DEC-005 | Create/view/close, audit, denial tests | Not implemented |
+| ENC-04 | Minimal encounter create/view/close UI | M-O | BP; TASK | None | Required V1.0 encounter workflow | DEC-005 | Create/view/close, audit, denial tests | Not implemented |
 | ENC-05 | Full encounter and clinical workflow | D | AF §6-§7 | None | V1.1 | - | V1.1 evidence | Deferred |
 | AUD-01 | Minimum durable sensitive-action audit | M-O | CPD CD-10; AF §12; PRR §6 | In-memory illustrative only | Audit schema, write path, basic restricted read | CR-009 | Actor/action/resource/reason tests | Illustrative only |
 | AUD-02 | Append-only enforcement at database level | M-F | AF §12 | None | Update/delete denial | CR-009 | Update/delete denial tests | Not implemented |
@@ -85,9 +85,6 @@ exit criteria.
 
 | Conditional requirement | Conditional milestone | Exit criteria if approved |
 |---|---|---|
-| PAT-06 Patient correction | M8-C | Correction recorded with reason, linked history, and audit |
-| PAT-07 Patient merge and reversal | M8-C | Approved authority, two-person control, link repointing, reversal, audit |
-| ENC-04 Minimal encounter UI | M9-C | Create/view/close, patient link, classification, participation, authorization, audit |
 | AUTH-05 Full role administration | M10-C | Assign/revoke roles and scopes, SoD, negative access tests |
 | AUTH-07 MFA and step-up | M4-C | Approved policy enforced and evidenced |
 | ORG-04 Initial department list | M6-C | Hospital-approved list loaded with audit and rollback |
@@ -99,6 +96,7 @@ exit criteria.
 
 | Requirement | Deferred to | Note |
 |---|---|---|
+| Patient merge and reversal | Future approval | Excluded from V1.0 |
 | Full clinical operations | V1.1 | Includes consultation, notes, orders, results, diagnosis, triage |
 | Billing and revenue | V1.2 | No financial workflow in V1.0 |
 | Pharmacy, inventory, procurement | V1.3 | No stock or dispensing in V1.0 |

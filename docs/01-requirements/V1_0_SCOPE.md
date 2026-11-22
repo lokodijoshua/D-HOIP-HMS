@@ -91,7 +91,11 @@ Full role administration is conditional; see section 5.
 - Central patient identity independent of departments.
 - No department-created patient identity.
 
-Patient correction and merge are conditional; see section 5.
+- Patient correction with a reason and append-only correction history.
+- Patient lifecycle states: active, inactive, and deceased, with controlled transitions.
+- Patient merge is excluded from V1.0.
+- The permanent hospital identifier is immutable after allocation.
+- Duplicate review requires `patient.duplicate.review`; override requires `patient.duplicate.override`.
 
 ### 4.6 Encounter data foundation
 
@@ -99,10 +103,13 @@ Patient correction and merge are conditional; see section 5.
 - Approved encounter classification, including emergency as a classification.
 - Encounter status and opened/closed timestamps at foundation level.
 - Responsible clinician and participating-department links where approved.
+- Patient encounter history.
+- Explicit encounter and association-level authorization.
 - Audit of encounter-foundation creation and status changes.
 
-The encounter **data foundation** is mandatory. A minimal encounter create/view UI is conditional;
-see section 5. Full encounter and clinical workflows are deferred to V1.1.
+The encounter foundation, patient encounter history, participants, department associations, and a
+minimal create/view/close UI are mandatory V1.0 scope. Full encounter and clinical workflows are
+deferred to V1.1.
 
 ### 4.7 Minimum sensitive-action audit
 
@@ -130,9 +137,6 @@ has a matching conditional milestone scope and exit criterion.
 
 | Capability | Condition | Why conditional |
 |---|---|---|
-| Patient correction | DEC-011 | Required for data quality but not confirmed as V1.0 commercial scope |
-| Patient merge and reversal | CR-004 and DEC-011 | High-risk identity operation; not confirmed as V1.0 |
-| Minimal encounter create/view UI | DEC-005 and proposal confirmation | Encounter data foundation is mandatory; UI may be V1.1 |
 | Full role/permission administration | DEC-006 | Minimum enforcement is mandatory; full administration may follow |
 | MFA/step-up configuration | CR-015 | Depends on approved authentication policy |
 | Department administration UI beyond the required configuration mechanism | CR-001 | Configuration is mandatory; full administration UX is not assumed |
@@ -153,6 +157,7 @@ The following are outside V1.0 and must not be delivered as V1.0 work:
 - Reporting, BI, and executive intelligence (V3.0/V3.1).
 - Offline operation, integrations, patient portal, document upload, SMS.
 - Multi-hospital tenancy.
+- Patient merge and reversal, until separately approved.
 - Automatic patient merge or organization-wide duplicate cleanup.
 
 ## 7. Domain boundaries
@@ -175,9 +180,11 @@ Detailed boundaries are in
 | Employee lifecycle | Deactivation or revocation takes effect promptly and is audited |
 | Departments | Configurable registry exists; stable identifiers; enable/disable preserves history; actions audited |
 | Initial department data | No initial list is loaded until hospital approval is recorded |
-| Patient identity | Search-before-create; duplicate review cannot be silently bypassed; hospital ID is unique and permanent |
+| Patient identity | Search-before-create; duplicate review cannot be silently bypassed; hospital ID is unique, permanent, and immutable |
 | Identity status | Pending/verified states operate for the approved workflow |
-| Encounter foundation | Every encounter links to exactly one patient; classification and participation are recorded; transitions are audited |
+| Patient correction | Reasoned correction, append-only history, and audit |
+| Patient lifecycle | Active/inactive/deceased transitions are authorized and audited |
+| Encounter foundation | Every encounter links to exactly one patient; classification, participation, department associations, history view, and transitions are authorized and audited |
 | Minimum audit | Sensitive V1.0 actions are durably recorded; ordinary update/delete is denied; access is restricted |
 | Authorization | Server-side permission checks pass negative and cross-scope tests |
 | Data integrity | Constraints, uniqueness, idempotency, and concurrency behavior are demonstrated |
@@ -191,9 +198,6 @@ criteria and evidence requirements. They are not part of the mandatory V1.0 exit
 
 | Conditional capability | Acceptance if approved |
 |---|---|
-| Patient correction | Linked correction, reason, audit, and preserved history |
-| Patient merge | Approved authority, two-person control, link repointing, reversal, audit |
-| Minimal encounter UI | Create/view/close with patient link, classification, participation, authorization, and audit |
 | Full role administration | Assign/revoke roles and scopes with SoD and negative tests |
 | MFA/step-up | Approved policy enforced and evidenced |
 | Broader audit | Retention, legal hold, delegated access, and tamper evidence as approved |

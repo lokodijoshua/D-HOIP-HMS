@@ -107,6 +107,20 @@ The access domain owns:
 It does not own patient, encounter, or financial data. Access decisions are enforced on the server;
 client-provided roles or scopes are never trusted.
 
+**Access lifecycle invariants:**
+
+- Employee deactivation and Clerk-link revocation occur in one administrative transaction.
+- An inactive employee must not have an active Clerk link.
+- Role, permission, and department assignment history is preserved using status/effective dates;
+  active mappings are not silently deleted.
+- `patient.duplicate.review` is distinct from `patient.duplicate.override`; candidate visibility is
+  restricted to the review requester and authorized reviewers.
+- The permanent hospital identifier is immutable after allocation; corrections never rewrite it.
+- First-administrator bootstrap and Clerk-link provisioning use a privileged, audited provisioning
+  path; there is no application self-registration or first-user bootstrap endpoint.
+- Encounter and encounter-association actions are explicitly authorized at function and row level;
+  department participation does not imply unrestricted encounter access.
+
 ### 3.5 Audit
 
 Audit is a shared capability. The minimum V1.0 audit foundation records sensitive actions in an
@@ -153,7 +167,7 @@ approved design.
 ## 5. V1.0 invariants
 
 1. One canonical patient identity per person.
-2. The hospital identifier is permanent and never reused.
+2. The hospital identifier is permanent, immutable, and never reused.
 3. No department creates a patient identity.
 4. Every encounter links to exactly one patient.
 5. An encounter may involve multiple departments without belonging to one.
@@ -164,6 +178,11 @@ approved design.
 10. No V1.0 workflow creates clinical, financial, or stock history.
 11. No multi-hospital tenant key is introduced.
 12. No real patient data is used in synthetic previews or tests.
+13. Role, permission, and department assignment history is preserved; revocation does not delete
+    history.
+14. Employee deactivation and Clerk-link revocation are transactionally consistent.
+15. Duplicate-review visibility is restricted; review and override are separate permissions.
+16. Encounter and association-level access is explicitly authorized.
 
 ## 6. Extensibility rules
 
@@ -180,8 +199,8 @@ approved design.
 
 - Initial department list and enabled states (DEC-016).
 - Registration ownership (CR-002).
-- Encounter foundation UI inclusion (DEC-005).
-- Patient correction and merge inclusion (DEC-011).
+- Exact encounter history/UI presentation details; the foundation and minimal workflow are in V1.0.
+- Patient merge (excluded from V1.0; future approval).
 - Full role administration (DEC-006).
 - Broader audit scope (CR-009 and DEC-014).
 
