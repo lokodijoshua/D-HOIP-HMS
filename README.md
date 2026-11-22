@@ -54,6 +54,26 @@ The following domains form the planned system scope. They are not implemented mo
 | HMO and claims | Manual enrollment, coverage checks, claim lifecycle, receivables, remittances, and reconciliation without an API dependency. |
 | Theatre and specialist services | Theatre, maternity, ophthalmology, procurement, workforce, facilities, and patient-safety workflows as proposed operational workspaces. |
 
+## Product-version roadmap
+
+The proposed commercial product-version structure is V1.0 Digital Hospital Foundation, V1.1 Clinical
+Operations, V1.2 Billing & Revenue, V1.3 Pharmacy, Inventory & Procurement, V2.0 Integrated Hospital
+Operations, V2.1 Automated Clinical Workflow, V2.2 HMO & Claims, V2.3 Staff & Operational Management,
+V3.0 Hospital Business Intelligence, and V3.1 Board & Executive Intelligence.
+
+The DARE2CARE D-HOIP Budget Proposal is the proposed commercial authority; its local source path and
+SHA-256 are recorded in
+[`docs/01-requirements/V1_0_SOURCE_REGISTER.md`](docs/01-requirements/V1_0_SOURCE_REGISTER.md). The
+V1.0-V3.1 text has not been re-extracted in this environment, so the mapping to the internal V0-V5
+roadmap remains provisional. The internal roadmap remains historical/internal context, not the
+product-version authority.
+
+Product versions are not Git branch names. Branches, commits, pull requests, and release tags follow
+[`docs/03-delivery/DEVOPS_LIFECYCLE.md`](docs/03-delivery/DEVOPS_LIFECYCLE.md). The proposed V1.0
+scope and its mandatory/conditional boundary are in
+[`docs/01-requirements/V1_0_SCOPE.md`](docs/01-requirements/V1_0_SCOPE.md). They are not approved and
+do not authorize implementation.
+
 ## Technology direction
 
 The stack below is the documented direction. The UI shell, synthetic M1 preview, and non-production
@@ -199,15 +219,26 @@ the live Stage B database/RLS test only runs when a dedicated `DATABASE_URL` is 
 ├── docs/
 │   ├── 00-governance/
 │   │   ├── CONFLICT_REGISTER.md
+│   │   ├── PRODUCTION_READINESS_REGISTER.md
 │   │   ├── SOURCE_AUTHORITY.md
-│   │   └── STATUS_AND_APPROVAL.md
+│   │   ├── STATUS_AND_APPROVAL.md
+│   │   └── V1_0_DECISION_AND_APPROVAL_REGISTER.md
 │   ├── 01-requirements/
-│   │   └── CONFIRMED_PROJECT_DIRECTION.md
+│   │   ├── CONFIRMED_PROJECT_DIRECTION.md
+│   │   ├── PRODUCT_VERSION_GOVERNANCE.md
+│   │   ├── V1_0_REQUIREMENTS_TRACEABILITY.md
+│   │   ├── V1_0_SCOPE.md
+│   │   └── V1_0_SOURCE_REGISTER.md
 │   ├── 02-architecture/
 │   │   ├── ARCHITECTURE_FOUNDATION.md
-│   │   └── STAGE_B_DATABASE_SECURITY_SPIKE.md
+│   │   ├── PATIENT_REGISTRY_M1.md
+│   │   ├── STAGE_B_DATABASE_SECURITY_SPIKE.md
+│   │   ├── V1_0_AUDIT_FOUNDATION_BOUNDARY.md
+│   │   └── V1_0_DOMAIN_FOUNDATIONS.md
 │   ├── 03-delivery/
-│   │   └── DEVOPS_LIFECYCLE.md
+│   │   ├── DEVOPS_LIFECYCLE.md
+│   │   ├── V1_0_MILESTONE_AND_DEPENDENCY_PLAN.md
+│   │   └── V1_0_PRESENTATION_AND_READINESS_ASSESSMENT.md
 │   └── README.md
 ├── src/
 │   ├── app/
@@ -313,6 +344,15 @@ data residency. These are tracked in the
 - [Status and approval model](docs/00-governance/STATUS_AND_APPROVAL.md)
 - [Conflict and open decision register](docs/00-governance/CONFLICT_REGISTER.md)
 - [Confirmed project direction](docs/01-requirements/CONFIRMED_PROJECT_DIRECTION.md)
+- [Product version governance](docs/01-requirements/PRODUCT_VERSION_GOVERNANCE.md)
+- [V1.0 source register](docs/01-requirements/V1_0_SOURCE_REGISTER.md)
+- [V1.0 scope](docs/01-requirements/V1_0_SCOPE.md)
+- [V1.0 requirements traceability](docs/01-requirements/V1_0_REQUIREMENTS_TRACEABILITY.md)
+- [V1.0 decision and approval register](docs/00-governance/V1_0_DECISION_AND_APPROVAL_REGISTER.md)
+- [V1.0 domain foundations](docs/02-architecture/V1_0_DOMAIN_FOUNDATIONS.md)
+- [V1.0 audit foundation boundary](docs/02-architecture/V1_0_AUDIT_FOUNDATION_BOUNDARY.md)
+- [V1.0 milestone and dependency plan](docs/03-delivery/V1_0_MILESTONE_AND_DEPENDENCY_PLAN.md)
+- [V1.0 presentation and readiness assessment](docs/03-delivery/V1_0_PRESENTATION_AND_READINESS_ASSESSMENT.md)
 - [Architecture foundation](docs/02-architecture/ARCHITECTURE_FOUNDATION.md)
 - [Stage B authentication and database security spike](docs/02-architecture/STAGE_B_DATABASE_SECURITY_SPIKE.md)
 - [DevOps lifecycle proposal](docs/03-delivery/DEVOPS_LIFECYCLE.md)

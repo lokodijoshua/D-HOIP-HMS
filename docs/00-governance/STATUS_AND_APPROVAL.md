@@ -361,10 +361,44 @@ validated only for the synthetic Stage B probe; it is not production-validated.
 
 Evidence: [`../02-architecture/STAGE_B_DATABASE_SECURITY_SPIKE.md`](../02-architecture/STAGE_B_DATABASE_SECURITY_SPIKE.md).
 
-## 12. Related documents
+## 12. V1.0 documentation preparation status
+
+**Status:** DOCUMENTATION PREPARATION AUTHORIZED - NOT AN IMPLEMENTATION, GATE, PILOT, OR PRODUCTION
+APPROVAL.
+**Decision ID:** `AUTH-V1-0-DOCS-001`.
+**Approver role:** Project owner.
+**Approver name:** Not recorded in the 2026-11-22 instruction.
+**Date:** 2026-11-22.
+**Scope:** create the nine proposed V1.0 documentation files and update the seven listed existing
+documentation/governance files, after incorporating the approved corrections.
+**Conditions:**
+
+- documentation only;
+- no application source, schema, migration, dependency, package, CI, infrastructure, or deployment
+  change;
+- no branch switch, commit, push, PR, merge, reset, clean, stash, or overwrite;
+- no build or file-regenerating command;
+- no hospital policy or unresolved decision is approved;
+- every V1.0 document remains `PROPOSED` unless separately approved.
+
+**Evidence links:** project-owner instruction "D-HOIP — V1.0 Scope, Requirements and Traceability
+Pack", received 2026-11-22, incorporating the corrections on source authority, scope, domain
+boundaries, milestones, and decisions.
+**Expiry or review date:** review when the V1.0 documentation pack is approved or superseded.
+**Risk accepted:** documentation risk only. No production, clinical, financial, or real-data risk is
+accepted.
+
+Gate status is unchanged. Gate 1 evidence is in preparation, but Gate 1 is not approved. Gates 0-5
+remain blocked to the extent recorded in section 7, and Gates 6-8 remain not started.
+
+## 13. Related documents
 
 - `docs/00-governance/SOURCE_AUTHORITY.md`
 - `docs/00-governance/PRODUCTION_READINESS_REGISTER.md`
 - `docs/00-governance/CONFLICT_REGISTER.md`
+- `docs/00-governance/V1_0_DECISION_AND_APPROVAL_REGISTER.md`
+- `docs/01-requirements/PRODUCT_VERSION_GOVERNANCE.md`
+- `docs/01-requirements/V1_0_SCOPE.md`
+- `docs/03-delivery/V1_0_MILESTONE_AND_DEPENDENCY_PLAN.md`
 - `docs/03-delivery/DEVOPS_LIFECYCLE.md`
 - `.local-ai/instructions/approval-gates.md`
