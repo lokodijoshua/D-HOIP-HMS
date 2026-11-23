@@ -22,6 +22,27 @@ External standards and regulation (for example Nigerian law, NDPA 2023, NHA 2014
 binding or advisory according to their legal status. They are not ranked as a product source and
 must be assessed by legal/DPO review where applicable.
 
+### 1.1 Product-version authority
+
+The DARE2CARE D-HOIP Budget Proposal is the **proposed commercial product-version authority** for the
+V1.0-V3.1 structure. It does not override hospital policy, an approved ADR, or the safety rules in
+this repository.
+
+| Item | Value |
+|---|---|
+| Source ID | `SRC-V1-BP-001` |
+| Local path | `C:\Users\USER\Downloads\DARE2CARE_D-HOIP_Proposal.docx.pdf` |
+| SHA-256 | `8F9A62CCC6576E78583D5A39952C426DB80DB4DC0ED09C8A573EB1E43201F3BF` |
+| Hash verification | Verified 2026-11-22; matches the project-owner-supplied hash |
+| Text verification | Exact V1.0-V3.1 wording not re-extracted in this environment |
+| Authority status | SOURCE SELECTED - PRODUCT-VERSION AUTHORITY PENDING APPROVAL |
+| Repository registration | Reference path only; not yet an approved repository source |
+
+The source is recorded in
+[`../01-requirements/V1_0_SOURCE_REGISTER.md`](../01-requirements/V1_0_SOURCE_REGISTER.md). Its
+product-version reconciliation is recorded in
+[`../01-requirements/PRODUCT_VERSION_GOVERNANCE.md`](../01-requirements/PRODUCT_VERSION_GOVERNANCE.md).
+
 ## 2. Verified sources
 
 The following sources were located and verified during initialization. Paths are recorded exactly.
@@ -40,6 +61,7 @@ Integrity hashes are in `.local-ai/working-notes/source-inventory-and-migration-
 | S9 | Existing D-HOIP baseline documentation | `C:\Projects\DHOIP\docs\` | Working tree; some documents stale | Historical baseline; not automatically current |
 | S10 | Project-owner direction recorded in this initialization task | Initialization request | 2026-11-14 | Project direction; formal recording still required |
 | S11 | External standards and regulation | NHA 2014, NDPA 2023, NDPC GAID 2025, MDCN, OWASP | As cited in the blueprint | Legal/regulatory and voluntary security targets |
+| S12 | DARE2CARE D-HOIP Budget Proposal | `C:\Users\USER\Downloads\DARE2CARE_D-HOIP_Proposal.docx.pdf` | Path and SHA-256 verified 2026-11-22; exact text not re-extracted | Proposed commercial product-version authority for V1.0-V3.1; pending approval |
 
 ## 3. Source-status rules
 
@@ -58,6 +80,11 @@ Integrity hashes are in `.local-ai/working-notes/source-inventory-and-migration-
    and the current decisions before use.
 8. A project-owner statement is project direction, not automatically an approved hospital policy or
    an accepted ADR. Where it changes an accepted ADR, a new ADR or amendment must be approved.
+9. The DARE2CARE proposal is a proposed commercial product-version authority. Its hash match does
+   not prove its contents were interpreted correctly, and it does not approve V1.0 scope or any
+   hospital policy.
+10. The internal V0-V5 roadmap remains historical/internal engineering context until a formal
+    product-version reconciliation is approved.
 
 ## 4. Handling conflicts
 
@@ -94,6 +121,8 @@ The consolidated register is `docs/00-governance/CONFLICT_REGISTER.md`.
 - Demo V3 has no licence file. It remains reference-only.
 - PDF text extraction tooling is unavailable in this environment. PDF content was verified through
   the Stage 3 investigation and file integrity, not by a fresh full-text extraction.
+- The V1.0 proposal, blueprint, and specification PDFs remain hash-verified but not text-re-extracted.
+  The proposal's V1.0-V3.1 wording must be reconciled before it is treated as approved scope.
 - Hospital workshop records, signed approvals, and legal/DPO advice were not available.
 
 ## 7. Related documents
@@ -101,4 +130,6 @@ The consolidated register is `docs/00-governance/CONFLICT_REGISTER.md`.
 - `docs/00-governance/STATUS_AND_APPROVAL.md`
 - `docs/00-governance/CONFLICT_REGISTER.md`
 - `docs/01-requirements/CONFIRMED_PROJECT_DIRECTION.md`
+- `docs/01-requirements/V1_0_SOURCE_REGISTER.md`
+- `docs/01-requirements/PRODUCT_VERSION_GOVERNANCE.md`
 - `.local-ai/instructions/source-authority.md`

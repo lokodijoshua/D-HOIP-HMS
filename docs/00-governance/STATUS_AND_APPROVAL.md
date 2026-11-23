@@ -111,10 +111,10 @@ Risk accepted (if any):
 | 0 | IN PROGRESS / BLOCKED | Sources located but policy is unsigned; Demo V3 licence unresolved; no hospital workshop records; source register was stale |
 | 1 | BLOCKED | Requirements are not approved; department/ownership/identity decisions unresolved |
 | 2 | BLOCKED | Department registry, registration/billing ownership, and identity reconciliation unresolved |
-| 3 | BLOCKED | RLS unvalidated; MFA/step-up unresolved; permissions matrix not approved |
-| 4 | BLOCKED | No approved schema; Stage B spike not executed; money precision unresolved |
-| 5 | BLOCKED | No implementation authorization |
-| 6 | NOT STARTED | M1 has Vitest domain/workflow tests; no full application test harness, security evidence, or approved Gate 6 evidence exists |
+| 3 | BLOCKED | Stage B synthetic RLS/helper and controlled real Clerk request evidence passed; production access matrix, MFA/step-up, broader adversarial testing, security review, and production RLS remain unresolved |
+| 4 | BLOCKED | No approved production schema; Stage B probe is synthetic; money precision unresolved |
+| 5 | BLOCKED | No Gate 5 implementation-readiness authorization; the scoped Stage B spike does not satisfy the gate |
+| 6 | NOT STARTED | M1 unit tests and synthetic Stage B live tests exist; no full application test harness, production security evidence, or approved Gate 6 evidence exists |
 | 7 | NOT STARTED | No deployment or operational readiness |
 | 8 | NOT STARTED | No release |
 
@@ -247,10 +247,158 @@ Expiry or review date: Review when M1 is accepted or superseded; no standing aut
 Risk accepted: Synthetic preview only. No production use or real patient data.
 ```
 
-## 10. Related documents
+## 10. Recorded M2 Stage B authentication and database security spike authorization
+
+The following scoped authorization was issued by the project owner for a bounded, non-production
+Stage B security spike. It is recorded here because it authorizes authentication, database, and RLS
+scaffolding that earlier records did not authorize.
+
+```text
+Decision / gate: Scoped implementation authorization - M2 Stage B authentication and database security spike
+Decision ID: AUTH-M2-STAGE-B-001
+Status: APPROVED WITH CONDITIONS
+Approver role: Project owner
+Approver name: Joshua Lokodi
+Date: 2026-11-21
+Scope:
+  - install pinned Clerk, Drizzle ORM, Drizzle Kit, and postgres dependencies compatible with the
+    existing Next.js 16.4.6, React 19.3.1, and Node.js 24.22.3 foundation;
+  - add Next.js proxy.ts Clerk middleware integration;
+  - add a server-only Clerk session verification and employee-link authentication boundary;
+  - add a Drizzle client and transaction helper that sets transaction-local claims and
+    SET LOCAL ROLE authenticated;
+  - add non-patient, synthetic Stage B probe tables and RLS policies for employee-link and
+    ownership checks;
+  - add unit tests and a gated live database/RLS check;
+  - add a non-production, production-disabled probe route;
+  - add .env.example placeholders without secrets;
+  - add Stage B architecture, authorization, readiness, and README documentation.
+Conditions:
+  - no real patient, hospital, employee, or production data;
+  - no patient tables, patient workflows, production employee/role schema, or authorization matrix;
+  - no Clerk provider, sign-in UI, shared UI change, or production authentication configuration;
+  - no Supabase project, Clerk application, credentials, service-role key, or external service is
+    created or configured by this authorization;
+  - the runtime database role must be dedicated, non-owner, and NOBYPASSRLS;
+  - the runtime must not use a service-role key or auth.uid();
+  - RLS remains proposed and unvalidated until the live probe and review evidence exist;
+  - live Supabase/RLS tests and live Clerk-session proof are not satisfied by mocked unit tests;
+  - Data API exposure must be verified separately and is not claimed;
+  - production routes remain fail-closed; the probe route returns 404 in production;
+  - committing, pushing, opening a pull request, and merging remain unauthorized without a separate
+    instruction;
+  - Gate 3, Gate 4, Gate 5, and all other gates remain BLOCKED; this record does not approve a gate
+    or production readiness.
+Evidence links: Project-owner instruction "D-HOIP - Implement M2 Stage B Authentication and Database
+Security Spike", received 2026-11-21; docs/02-architecture/STAGE_B_DATABASE_SECURITY_SPIKE.md.
+Expiry or review date: Review when Stage B live evidence is reviewed or the spike is superseded. No
+standing authorization.
+Risk accepted: Non-production synthetic security scaffolding only. No production use, real data, or
+claim that RLS is validated.
+```
+
+## 11. Current Stage B evidence status
+
+**Status:** Development implementation / security spike. **NOT PRODUCTION READY.**
+**No gate is approved or advanced by this status note.**
+
+Evidence recorded on 2026-11-21 and 2026-11-22:
+
+- The synthetic `dhoip` probe was applied to the development Supabase project.
+- The runtime uses the Session Pooler with TLS, port 5432, and the dedicated `dhoip_app` role.
+- `dhoip_app` is LOGIN, NOINHERIT, NOBYPASSRLS, not superuser, and a member of `authenticated`.
+- The `dhoip` schema and both probe tables are owned by `postgres`; both tables have RLS enabled and
+  forced.
+- The two SELECT policies scope employee-link access to the Clerk JWT `sub`, and the probe-resource
+  policy additionally requires an active employee link.
+- The status constraint permits exactly `active`, `inactive`, and `revoked`.
+- The gated live suite previously passed 9 of 9 tests: five raw-connection PostgreSQL/RLS tests and
+  four tests using the actual `withAuthenticatedTransaction` and `requireActiveStageBEmployee`
+  boundary. It was not rerun during the real-session request task.
+- Actual-helper evidence confirms `session_user=dhoip_app`, `current_user=authenticated`,
+  transaction-local JWT subject propagation, own-subject and cross-subject isolation,
+  inactive/revoked/unlinked denial, callback error propagation, and cleared transaction context.
+- The proxy was relocated from root-level `proxy.ts` to `src/proxy.ts` with contents preserved
+  (SHA-256 `1A89805B67E3ED1A768B673320724CA546E5D361ED98BC0532F4D2CAD9DAFA2A`); the compiled
+  middleware entry and live request log confirm proxy execution.
+- A controlled real Clerk development-session request to `GET /api/stage-b/probe` returned `200`,
+  exactly one `stage-b-clerk-session-test-resource` row, and no unrelated rows; the session was
+  revoked successfully.
+- All six diagnostic phases were emitted: `route_handler_entered`,
+  `run_as_active_employee_entered`, `clerk_subject_verified`,
+  `database_transaction_callback_entered`, `active_employee_link_verified`, and
+  `probe_resource_query_completed`.
+- The operator reports that the reviewed atomic cleanup transaction removed the two temporary
+  Clerk-session fixtures after execution as `postgres`, deleting the probe-resource fixture before
+  the employee-link fixture, with exact identity and post-deletion checks. This is operator-reported
+  and was not independently verified against live database state.
+- The real-session request test is not immediately repeatable without recreating the approved
+  temporary fixtures; seeded probe fixtures remain separate.
+- Unit tests: 68 passed with the live gate disabled; 9 live tests skipped. Typecheck and production
+  build passed. Lint is not configured. `git diff --check` passed.
+- Data rollback is not proven because the tests perform no persistent writes; transaction-context
+  rollback is proven.
+- `runAsActiveEmployee` was exercised through the controlled real Clerk development-session
+  request. It obtains only the server-verified Clerk `userId`, calls the same authenticated
+  transaction helper, and checks active employee status before the protected callback.
+
+Remaining conditions:
+
+- recreation of approved temporary fixtures if the real-session request test is to be repeated;
+- independent verification of live post-cleanup state if required;
+- interactive browser sign-in, a Clerk provider/sign-in UI, MFA, session tasks, and broader
+  adversarial token/session testing;
+- production authorization, employee, role, permission, and department models;
+- an approved data-rollback proof if required;
+- Data API exposure decision;
+- transaction-pooler/helper evidence if that mode is used;
+- durable audit, backup/restore, monitoring, deployment, and operational evidence;
+- human security/privacy review and explicit approval.
+
+Next approval boundary: Stage B evidence may be reviewed under Gate 3 (security and permissions) and
+Gate 4 (data model and migration). Gates 3, 4, 5, and all later gates remain **BLOCKED**. RLS is
+validated only for the synthetic Stage B probe; it is not production-validated.
+
+Evidence: [`../02-architecture/STAGE_B_DATABASE_SECURITY_SPIKE.md`](../02-architecture/STAGE_B_DATABASE_SECURITY_SPIKE.md).
+
+## 12. V1.0 documentation preparation status
+
+**Status:** DOCUMENTATION PREPARATION AUTHORIZED - NOT AN IMPLEMENTATION, GATE, PILOT, OR PRODUCTION
+APPROVAL.
+**Decision ID:** `AUTH-V1-0-DOCS-001`.
+**Approver role:** Project owner.
+**Approver name:** Not recorded in the 2026-11-22 instruction.
+**Date:** 2026-11-22.
+**Scope:** create the nine proposed V1.0 documentation files and update the seven listed existing
+documentation/governance files, after incorporating the approved corrections.
+**Conditions:**
+
+- documentation only;
+- no application source, schema, migration, dependency, package, CI, infrastructure, or deployment
+  change;
+- no branch switch, commit, push, PR, merge, reset, clean, stash, or overwrite;
+- no build or file-regenerating command;
+- no hospital policy or unresolved decision is approved;
+- every V1.0 document remains `PROPOSED` unless separately approved.
+
+**Evidence links:** project-owner instruction "D-HOIP — V1.0 Scope, Requirements and Traceability
+Pack", received 2026-11-22, incorporating the corrections on source authority, scope, domain
+boundaries, milestones, and decisions.
+**Expiry or review date:** review when the V1.0 documentation pack is approved or superseded.
+**Risk accepted:** documentation risk only. No production, clinical, financial, or real-data risk is
+accepted.
+
+Gate status is unchanged. Gate 1 evidence is in preparation, but Gate 1 is not approved. Gates 0-5
+remain blocked to the extent recorded in section 7, and Gates 6-8 remain not started.
+
+## 13. Related documents
 
 - `docs/00-governance/SOURCE_AUTHORITY.md`
 - `docs/00-governance/PRODUCTION_READINESS_REGISTER.md`
 - `docs/00-governance/CONFLICT_REGISTER.md`
+- `docs/00-governance/V1_0_DECISION_AND_APPROVAL_REGISTER.md`
+- `docs/01-requirements/PRODUCT_VERSION_GOVERNANCE.md`
+- `docs/01-requirements/V1_0_SCOPE.md`
+- `docs/03-delivery/V1_0_MILESTONE_AND_DEPENDENCY_PLAN.md`
 - `docs/03-delivery/DEVOPS_LIFECYCLE.md`
 - `.local-ai/instructions/approval-gates.md`

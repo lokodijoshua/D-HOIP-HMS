@@ -42,6 +42,24 @@ data must never be copied into local or CI.
 No long-lived `develop` branch is proposed. No direct commits to `main`. No force-push to protected
 branches. No merge without review.
 
+### 3.1 Product versions are not branch names
+
+Product versions from the DARE2CARE proposal (V1.0-V3.1) are commercial/product boundaries. They must
+not be used as branch names or as substitutes for short-lived work branches.
+
+| Artifact | Purpose | Rule |
+|---|---|---|
+| Product version | Commercial/product release boundary | Defined by approved product-version governance |
+| Implementation milestone | Independently testable work package | May map many-to-one or one-to-many with product versions |
+| Branch | Short-lived work container | `feature/`, `fix/`, `docs/`, `release/`, or `hotfix/` naming |
+| Commit | One logical change | Conventional Commits; not a release claim |
+| Pull request | Review and evidence unit | Not proof of product completion |
+| Release tag | Immutable marker of an approved deployable state | Created only after release approval and verification |
+
+A merge does not complete a product version. A release tag is not created merely because a milestone
+or product-version document exists. See
+[`../01-requirements/PRODUCT_VERSION_GOVERNANCE.md`](../01-requirements/PRODUCT_VERSION_GOVERNANCE.md).
+
 ## 4. Commit conventions
 
 Use Conventional Commits with a scope where useful:

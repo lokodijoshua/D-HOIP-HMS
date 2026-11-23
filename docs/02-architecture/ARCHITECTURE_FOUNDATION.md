@@ -392,7 +392,43 @@ targets; accessibility conformance evidence.
 24. No PHI or credentials in ordinary logs; no shared accounts.
 25. Every sensitive action is audited; audit is append-only.
 
-## 21. What must be decided before implementation
+## 21. V1.0 scope and boundary cross-reference
+
+The V1.0 scope is defined in
+[`../01-requirements/V1_0_SCOPE.md`](../01-requirements/V1_0_SCOPE.md). It is PROPOSED, not approved,
+and does not authorize schema or implementation work.
+
+V1.0 is limited to the Digital Hospital Foundation:
+
+- authentication, employee access, and minimum role/permission enforcement;
+- a configurable department registry whose initial list is awaiting hospital approval;
+- patient registration, permanent identity, duplicate review, and pending/verified identity;
+- an encounter **data foundation**, not full clinical operations;
+- minimum sensitive-action auditing.
+
+Conditional V1.0 capabilities include patient correction, merge, minimal encounter UI, full role
+administration, MFA/step-up, and broader audit. They are not mandatory V1.0 acceptance unless
+separately approved. Full clinical operations, billing, pharmacy, HMO, ward, and reporting remain
+later-version work.
+
+Boundary rules:
+
+1. Departments are configurable organizational units and do not own patient identity, encounters,
+   money, stock, or audit.
+2. Patient identity is central and independent of departments.
+3. An encounter is a patient-centred episode and is not a department.
+4. Emergency is an encounter classification, not a department code.
+5. Shared capabilities, including audit, are not departments.
+6. Encounter data structures do not implement V1.1 clinical workflows.
+7. Minimum audit does not imply retention, delegated grants, or tamper evidence.
+8. Hosting and residency decisions block hosted environment and pilot/production approval, not
+   logical architecture by default.
+
+See
+[`V1_0_DOMAIN_FOUNDATIONS.md`](V1_0_DOMAIN_FOUNDATIONS.md) and
+[`V1_0_AUDIT_FOUNDATION_BOUNDARY.md`](V1_0_AUDIT_FOUNDATION_BOUNDARY.md).
+
+## 22. What must be decided before implementation
 
 1. Approve the department/workspace registry and ownership map.
 2. Approve patient identity, unidentified-emergency, and merge rules; record the new ADR.
@@ -405,12 +441,18 @@ targets; accessibility conformance evidence.
 9. Complete the Stage B compatibility and security spike before schema design.
 10. Ratify the gate sequence and evidence requirements.
 
-## 22. Related documents
+## 23. Related documents
 
 - `docs/00-governance/SOURCE_AUTHORITY.md`
 - `docs/00-governance/STATUS_AND_APPROVAL.md`
 - `docs/00-governance/CONFLICT_REGISTER.md`
+- `docs/00-governance/V1_0_DECISION_AND_APPROVAL_REGISTER.md`
 - `docs/01-requirements/CONFIRMED_PROJECT_DIRECTION.md`
+- `docs/01-requirements/PRODUCT_VERSION_GOVERNANCE.md`
+- `docs/01-requirements/V1_0_SCOPE.md`
+- `docs/02-architecture/V1_0_DOMAIN_FOUNDATIONS.md`
+- `docs/02-architecture/V1_0_AUDIT_FOUNDATION_BOUNDARY.md`
+- `docs/03-delivery/V1_0_MILESTONE_AND_DEPENDENCY_PLAN.md`
 - `.local-ai/architecture/target-state-blueprint/FINAL_DHOIP_TARGET_STATE_SYSTEM_BLUEPRINT.md`
 - `.local-ai/architecture/target-state-blueprint/22_DECISION_ASSUMPTION_AND_APPROVAL_REGISTER.md`
 - `.local-ai/decisions/09_CONFLICT_AND_OPEN_DECISION_REGISTER.md`

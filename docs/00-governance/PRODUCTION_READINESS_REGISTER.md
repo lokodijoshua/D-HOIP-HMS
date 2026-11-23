@@ -57,10 +57,89 @@ reproducible, and tied to the relevant commit or release.
 |---|---|---|---|---|
 | Patient Management M1 | **SYNTHETIC PREVIEW — NOT PRODUCTION READY** | [`docs/02-architecture/PATIENT_REGISTRY_M1.md`](../02-architecture/PATIENT_REGISTRY_M1.md) | In-memory, synthetic, server-only preview; patient routes and actions fail closed in production | Not evidenced. See section 4. |
 | Application shell and dashboard preview | **SYNTHETIC PREVIEW — NOT PRODUCTION READY** | [`README.md`](../../README.md) and [`STATUS_AND_APPROVAL.md`](STATUS_AND_APPROVAL.md) section 8 | Synthetic UI preview; no authentication, database, real data, or production operations | Not evidenced. The shell is an interface foundation only. |
+| Stage B authentication and database security spike | **DEVELOPMENT IMPLEMENTATION - SECURITY SPIKE - NOT PRODUCTION READY** | [`docs/02-architecture/STAGE_B_DATABASE_SECURITY_SPIKE.md`](../02-architecture/STAGE_B_DATABASE_SECURITY_SPIKE.md) | Synthetic, non-patient probe applied to the development Supabase project; live RLS/helper tests and a real Clerk development-session request pass; no production authorization evidence | Synthetic probe evidence only. See section 3.1. |
 
 No other application capability is currently listed in this register. Any new synthetic preview,
 mock, in-memory implementation, partial workflow, or otherwise non-production capability must be
 added to this register in the same feature branch.
+
+### 3.1 Stage B authentication and database security spike
+
+**Status:** **DEVELOPMENT IMPLEMENTATION - SECURITY SPIKE - NOT PRODUCTION READY.**
+
+**Authorization reference:** `AUTH-M2-STAGE-B-001` in
+[`STATUS_AND_APPROVAL.md`](STATUS_AND_APPROVAL.md) section 10.
+
+**Detailed technical source:**
+[`docs/02-architecture/STAGE_B_DATABASE_SECURITY_SPIKE.md`](../02-architecture/STAGE_B_DATABASE_SECURITY_SPIKE.md)
+
+Implemented as non-patient scaffolding:
+
+- pinned Clerk 7.10.6, Drizzle ORM 0.45.4, Drizzle Kit 0.31.11, and postgres 4.1.1;
+- `proxy.ts` Clerk middleware integration, without route protection or a Clerk provider/sign-in UI;
+- server-side Clerk subject verification, probe employee-link verification, and a combined
+  authentication boundary;
+- a Drizzle client and transaction helper that sets transaction-local claims and
+  `SET LOCAL ROLE authenticated`;
+- synthetic `dhoip.stage_b_employee_link` and `dhoip.stage_b_probe_resource` tables, forced RLS,
+  policies, and repeatable up/down SQL;
+- unit tests plus a gated live suite with raw-connection and actual-helper tests, skipped unless
+  `DATABASE_URL` is set and `STAGE_B_LIVE_TESTS=1`;
+- a production-disabled non-patient probe route.
+
+Live development evidence (2026-11-21 and 2026-11-22):
+
+- The synthetic probe was applied successfully to the development Supabase project.
+- `dhoip_app` is LOGIN, NOINHERIT, NOBYPASSRLS, not superuser, and a member of `authenticated`.
+- The `dhoip` schema and both probe tables are owned by `postgres`.
+- Both probe tables have ENABLE ROW LEVEL SECURITY and FORCE ROW LEVEL SECURITY.
+- The employee-link policy scopes access to the Clerk JWT `sub`; the probe-resource policy also
+  requires an active employee link.
+- The status constraint permits exactly `active`, `inactive`, and `revoked`.
+- The gated live suite previously passed 9 of 9 tests: five raw-connection PostgreSQL/RLS tests and
+  four actual-helper tests using `withAuthenticatedTransaction` and `requireActiveStageBEmployee`.
+  The suite was not rerun during the real-session request task.
+- Actual-helper evidence includes `session_user=dhoip_app`, `current_user=authenticated`,
+  transaction-local JWT subject propagation, own-subject isolation, cross-subject isolation,
+  inactive/revoked/unlinked denial, callback-failure propagation, and cleared transaction context.
+- The proxy was relocated from root-level `proxy.ts` to `src/proxy.ts` with contents preserved
+  (SHA-256 `1A89805B67E3ED1A768B673320724CA546E5D361ED98BC0532F4D2CAD9DAFA2A`); the compiled
+  middleware entry and live request log confirm proxy execution.
+- A controlled real Clerk development-session request to `GET /api/stage-b/probe` returned `200`
+  with exactly one expected synthetic resource and no unrelated rows; the session was revoked.
+- All six diagnostic phases were emitted: `route_handler_entered`,
+  `run_as_active_employee_entered`, `clerk_subject_verified`,
+  `database_transaction_callback_entered`, `active_employee_link_verified`, and
+  `probe_resource_query_completed`.
+- The operator reports that the reviewed atomic cleanup transaction removed the two temporary
+  Clerk-session fixtures after execution as `postgres`, deleting the probe-resource fixture before
+  the employee-link fixture, with exact identity and post-deletion checks. This cleanup is
+  operator-reported, not independently agent-verified.
+- The real-session request test is not immediately repeatable without recreating the approved
+  temporary fixtures. The seeded probe fixtures remain separate.
+- `npm test` with the live gate disabled previously passed 68 unit tests and skipped 9 live tests.
+- `npm run typecheck` and `npm run build` passed. Lint is not configured.
+- Production dependency audit reported no vulnerabilities; the full audit reported four moderate
+  development-tooling findings in the `drizzle-kit`/`@esbuild-kit` chain.
+
+Not verified:
+
+- interactive browser sign-in, a Clerk provider/sign-in UI, MFA, session tasks, and broader
+  adversarial token/session testing;
+- production authorization, role, permission, department, and employee models;
+- data rollback, because the live tests intentionally perform no persistent writes; transaction
+  context rollback is proven, not row rollback;
+- live post-cleanup database state and cleanup row counts were not independently verified; the
+  cleanup result is operator-reported;
+- transaction-pooler behavior with the helper;
+- Supabase Data API exposure;
+- production schema, durable audit, concurrency, backup/restore, monitoring, deployment, and
+  operational evidence;
+- explicit human security and production-readiness review.
+
+The synthetic probe RLS behavior is validated for the tested development configuration. Production
+RLS, production authorization, and production readiness remain **UNVALIDATED**. This entry records
+development evidence and does not approve a gate or production use.
 
 ## 4. Patient Management M1
 
